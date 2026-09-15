@@ -4,7 +4,7 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <meta name="color-scheme" content="dark"/>
-<title>GAMBLE TERMINAL — Financial Dashboard</title>
+<title>Edge Simulator — Financial Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
@@ -15,7 +15,7 @@ tailwind.config={darkMode:'class',theme:{extend:{
     ink:{DEFAULT:'#060a0f',panel:'#0c1623',card:'#0f1e32',line:'#1b3048',line2:'#1e3b5a'},
     accent:{green:'#10ff7a',cyan:'#00e5ff',yellow:'#ffd600',red:'#ff3b5e'},
   }
-}}}
+}}};
 </script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 <style>
@@ -34,9 +34,9 @@ tailwind.config={darkMode:'class',theme:{extend:{
 <header class="sticky top-0 z-40 backdrop-blur-xl bg-[#060a0f]/80 border-b border-[#1b3048]">
   <div class="max-w-[1320px] mx-auto px-4 py-3 flex items-center gap-4 flex-wrap">
     <div class="flex items-center gap-3">
-      <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-[#10ff7a] to-[#00e5ff] grid place-items-center font-black text-[#03100a] text-[15px] shadow-[0_8px_24px_rgba(16,255,122,.28)]">G</div>
+      <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-[#10ff7a] to-[#00e5ff] grid place-items-center font-black text-[#03100a] text-[15px] shadow-[0_8px_24px_rgba(16,255,122,.28)]">E</div>
       <div>
-        <div class="font-black tracking-[.16em] text-[12px] text-white leading-none">GAMBLE TERMINAL</div>
+        <div class="font-black tracking-[.16em] text-[12px] text-white leading-none">EDGE SIMULATOR</div>
         <div class="text-[10px] tracking-[.14em] text-slate-500 mt-[3px]">KELLY · MONTE CARLO · PARLAY · RISK</div>
       </div>
     </div>
@@ -108,10 +108,9 @@ tailwind.config={darkMode:'class',theme:{extend:{
         <div><label class="text-[10px] tracking-[.08em] text-slate-500 font-bold">ODDS</label><input id="m-odds" value="2.00" class="mt-1.5 w-full bg-[#080e16] border border-[#1e3b5a] rounded-xl px-3 py-2.5 mono text-white focus:outline-none focus:border-cyan-400 focus:ring-4 focus:ring-cyan-400/10"/><div id="m-odds-err" class="hidden mt-1.5 text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-2.5 py-1.5"></div></div>
         <div><label class="flex justify-between text-[10px] tracking-[.08em] text-slate-500"><span class="font-bold text-slate-300">BET SIZE</span><span>% of bankroll</span></label><input id="m-bet" placeholder="auto: half Kelly" class="mt-1.5 w-full bg-[#080e16] border border-[#1e3b5a] rounded-xl px-3 py-2.5 mono text-white placeholder:text-slate-600 focus:outline-none focus:border-cyan-400 focus:ring-4 focus:ring-cyan-400/10"/><div id="m-kellyHint" class="mt-1.5 text-[11px] text-slate-500"></div><div id="m-bet-err" class="hidden mt-1.5 text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-2.5 py-1.5"></div></div>
         <div class="grid grid-cols-2 gap-3">
-          <div><label class="text-[10px] tracking-[.08em] text-slate-500 font-bold">BETS</label><input id="m-bets" type="number" value="500" min="1" max="5000" class="mt-1.5 w-full bg-[#080e16] border border-[#1e3b5a] rounded-xl px-3 py-2.5 mono text-white"/></div>
-          <div><label class="text-[10px] tracking-[.08em] text-slate-500 font-bold">SIMS</label><input id="m-sims" type="number" value="5000" min="100" max="50000" step="100" class="mt-1.5 w-full bg-[#080e16] border border-[#1e3b5a] rounded-xl px-3 py-2.5 mono text-white"/></div>
+          <div><label class="text-[10px] tracking-[.08em] text-slate-500 font-bold">BETS</label><input id="m-bets" type="number" value="500" min="1" max="5000" class="mt-1.5 w-full bg-[#080e16] border border-[#1e3b5a] rounded-xl px-3 py-2.5 mono text-white"/><div id="m-bets-err" class="hidden mt-1.5 text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-2.5 py-1.5"></div></div>
+          <div><label class="text-[10px] tracking-[.08em] text-slate-500 font-bold">SIMS</label><input id="m-sims" type="number" value="5000" min="100" max="50000" step="100" class="mt-1.5 w-full bg-[#080e16] border border-[#1e3b5a] rounded-xl px-3 py-2.5 mono text-white"/><div id="m-sims-err" class="hidden mt-1.5 text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-2.5 py-1.5"></div></div>
         </div>
-        <div id="m-sims-err" class="hidden text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-2.5 py-1.5"></div>
         <button id="m-run" class="w-full rounded-xl bg-gradient-to-b from-emerald-400 to-emerald-500 text-[#04140a] font-extrabold tracking-[.08em] py-3 shadow-[0_8px_20px_rgba(16,255,122,.25)] hover:brightness-[1.05] active:translate-y-px transition">▶ RUN SIMULATION</button>
         <div class="grid grid-cols-2 gap-2"><button id="m-half" class="rounded-xl border border-[#1e3b5a] bg-white/[.03] text-slate-200 text-xs font-semibold py-2.5 hover:border-cyan-400/40">Half Kelly</button><button id="m-quarter" class="rounded-xl border border-[#1e3b5a] bg-white/[.03] text-slate-200 text-xs font-semibold py-2.5 hover:border-cyan-400/40">Quarter</button></div>
       </div>
@@ -246,7 +245,7 @@ tailwind.config={darkMode:'class',theme:{extend:{
 </main>
 
 <footer class="max-w-[1320px] mx-auto px-4 pb-6 pt-2 flex flex-wrap gap-3 items-center text-[11px] text-slate-600">
-  <span>Gamble Terminal · local only · no tracking</span><span class="hidden sm:inline">Formula: f*=(bp−q)/b · EV=p·b−q · g=p·ln(1+fb)+q·ln(1−f)</span><a href="#" id="resetBtn" class="text-slate-400 hover:text-white underline decoration-dotted">Reset</a><span id="footStats" class="text-slate-600"></span><span class="ml-auto text-slate-500">Tip: <b class="text-slate-300">55%</b> or <b class="text-slate-300">0.55</b> · odds <b class="text-slate-300">2.5</b> / <b class="text-slate-300">+150</b> / <b class="text-slate-300">5/2</b></span>
+  <span>Edge Simulator · local only · no tracking</span><span class="hidden sm:inline">Formula: f*=(bp−q)/b · EV=p·b−q · g=p·ln(1+fb)+q·ln(1−f)</span><a href="#" id="resetBtn" class="text-slate-400 hover:text-white underline decoration-dotted">Reset</a><span id="footStats" class="text-slate-600"></span><span class="ml-auto text-slate-500">Tip: <b class="text-slate-300">55%</b> or <b class="text-slate-300">0.55</b> · odds <b class="text-slate-300">2.5</b> / <b class="text-slate-300">+150</b> / <b class="text-slate-300">5/2</b></span>
 </footer>
 <div id="toast" class="fixed right-4 bottom-4 z-50 hidden max-w-[360px] rounded-xl border border-[#1e3b5a] bg-[#0f1e32] text-slate-200 px-3 py-2.5 text-xs shadow-[0_12px_32px_rgba(0,0,0,.5)]"></div>
 
@@ -492,19 +491,22 @@ function makeRiskChart(q){
 
 // ── Tabs ──
 var active="kelly";
+var TAB_LABELS={kelly:'KELLY',monte:'MONTE CARLO',lab:'LAB',parlay:'PARLAY',risk:'RISK'};
+var TAB_SUFFIX={kelly:' <span class="font-medium opacity-80">f* optimal</span>',monte:'',lab:'',parlay:'',risk:''};
 function showTab(tab){
+  if(!TAB_LABELS[tab]) return;
   active=tab;
   document.querySelectorAll(".tab").forEach(function(b){
-    var is=b.getAttribute("data-tab")===tab;
+    var ownTab=b.getAttribute("data-tab");
+    var is=ownTab===tab;
     b.className=is
       ? "tab active whitespace-nowrap rounded-full px-4 py-2 text-[11px] tracking-[.08em] font-bold border border-emerald-400 bg-emerald-400 text-[#04140a] shadow-[0_4px_16px_rgba(16,255,122,.25)]"
       : "tab whitespace-nowrap rounded-full px-4 py-2 text-[11px] tracking-[.08em] font-semibold border border-transparent bg-transparent text-slate-500 hover:text-slate-200 hover:bg-white/5";
-    if(is) b.innerHTML=tab.toUpperCase()+(tab==="kelly"?' <span class="font-medium opacity-80">f* optimal</span>':"");
-    else b.textContent=tab.toUpperCase();
+    b.innerHTML=TAB_LABELS[ownTab]+(is?TAB_SUFFIX[ownTab]:"");
   });
   document.querySelectorAll(".view").forEach(function(v){ v.classList.toggle("hidden", v.id!=="view-"+tab); v.classList.toggle("active", v.id==="view-"+tab); });
   document.querySelectorAll(".left-panels>div").forEach(function(p){ p.classList.toggle("hidden", p.getAttribute("data-panel")!==tab); p.classList.toggle("active", p.getAttribute("data-panel")===tab); });
-  document.getElementById("leftTitle").textContent=tab.toUpperCase();
+  document.getElementById("leftTitle").textContent=TAB_LABELS[tab]||tab.toUpperCase();
   if(tab==="kelly") updateKelly();
   if(tab==="risk") updateRisk();
   if(tab==="monte") updateMonteHint();
@@ -592,7 +594,7 @@ function runMonte(){
   try{ dec=oddsToDecimal(document.getElementById("m-odds").value); setErr("m-odds-err",""); }catch(e){ setErr("m-odds-err", e.message); toast(e.message); return; }
   var br; try{ br=parseBankroll(document.getElementById("m-br").value); setErr("m-br-err",""); }catch(e){ setErr("m-br-err", e.message); toast(e.message); return; }
   var nBets, nSims;
-  try{ nBets=parseIntStrict(document.getElementById("m-bets"), "Bets", 1, 5000); setErr("m-sims-err",""); }catch(e){ setErr("m-sims-err", e.message); toast(e.message); return; }
+  try{ nBets=parseIntStrict(document.getElementById("m-bets"), "Bets", 1, 5000); setErr("m-bets-err",""); }catch(e){ setErr("m-bets-err", e.message); toast(e.message); return; }
   try{ nSims=parseIntStrict(document.getElementById("m-sims"), "Sims", 100, 50000); setErr("m-sims-err",""); }catch(e){ setErr("m-sims-err", e.message); toast(e.message); return; }
   var f; try{ f=parseBetPct(document.getElementById("m-bet").value, (function(){var s=getKellyForMonte(); return s&&s.f>0? s.f*0.5:0.02;})()); setErr("m-bet-err",""); }catch(e){ setErr("m-bet-err", e.message); toast(e.message); return; }
   if(!(f>0&&f<1)){ setErr("m-bet-err","Bet size must be 0–100%"); toast("Bet size must be 0–100%"); return; }
@@ -779,7 +781,6 @@ function bindParlay(){
 // ── Risk ──
 function updateRisk(){
   var p; try{ p=parseProb(document.getElementById("r-p").value); setErr("r-p-err",""); }catch(e){ setErr("r-p-err", e.message); return; }
-  document.getElementById("r-p").addEventListener("keydown", blockLetters);
   var q=1-p;
   var s=document.getElementById("r-f").value.trim(), f;
   if(s.charAt(s.length-1)==="%") f=parseFloat(s)/100; else { var v=parseFloat(s); f=v>1? v/100:v; }
@@ -820,8 +821,11 @@ function bindRisk(){
   ["r-p","r-f","r-start","r-target","r-stake"].forEach(function(id){
     var el=document.getElementById(id); if(!el) return;
     el.addEventListener("input", updateRisk);
-    if(id==="r-p"||id==="r-f") el.addEventListener("keydown", blockLetters);
-    if(id==="r-start"||id==="r-target"||id==="r-stake") el.addEventListener("keydown", function(e){ if(e.key==="-"||e.key==="e"||e.key==="E") e.preventDefault(); });
+  });
+  document.getElementById("r-p").addEventListener("keydown", blockLetters);
+  document.getElementById("r-f").addEventListener("keydown", blockLetters);
+  ["r-start","r-target","r-stake"].forEach(function(id){
+    var el=document.getElementById(id); if(el) el.addEventListener("keydown", function(e){ if(e.key==="-"||e.key==="e"||e.key==="E") e.preventDefault(); });
   });
 }
 

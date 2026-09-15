@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Gamble Terminal — Kelly Criterion + Monte Carlo
+Edge Simulator — Kelly Criterion + Monte Carlo
 Single file, stdlib only. python3 gamble.py
 ponytail: no persistence/charts export. Add when persistence needed: json save + matplotlib.
 """
@@ -406,7 +406,7 @@ BANNER = f"""{G}
   ╚██████╔╝██║  ██║██║ ╚═╝ ██║██████╔╝███████╗███████╗
    ╚═════╝ ╚═╝  ╚═╝╚═╝     ╚═╝╚═════╝ ╚══════╝╚══════╝{R}
   {GR}  ┌─────────────────────────────────────────────┐{R}
-  {GR}  │{R}  {C}TERMINAL{R}  {D}Kelly · Monte Carlo · Risk · Parlay{R}  {GR}│{R}
+  {GR}  │{R}  {C}EDGE SIMULATOR{R}  {D}Kelly · Monte Carlo · Risk · Parlay{R}  {GR}│{R}
   {GR}  └─────────────────────────────────────────────┘{R}
   {D}  stdlib only  •  no deps  •  type a number, get an edge{R}
 """
