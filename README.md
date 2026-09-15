@@ -18,7 +18,6 @@
 ---
 
 <p align="center">
-  <img src="https://via.placeholder.com/960x480/0c1623/10ff7a?text=Edge+Simulator+%E2%80%94+Kelly+%7C+Monte+Carlo+%7C+Parlay+%7C+Risk" alt="Edge Simulator dashboard preview" width="960">
   <br><sub><i>Modern dashboard (Tailwind + Chart.js) — also available as a green-on-black CRT mode.</i></sub>
 </p>
 
