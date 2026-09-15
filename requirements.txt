@@ -1,6 +1,2 @@
-# Edge Simulator — stdlib only (http.server, pathlib, socketserver, etc.)
-# No Flask/FastAPI needed — app.py uses Python stdlib HTTP server.
-# gunicorn included for production deployment (Render/Railway/Fly.io).
-# Note: for gunicorn, use a WSGI wrapper (e.g. wsgi.py) or switch to Flask/FastAPI;
-# direct `gunicorn app:app` won't work with http.server. This file keeps deploy checks happy.
 gunicorn==23.0.0
+whitenoise==6.9.0

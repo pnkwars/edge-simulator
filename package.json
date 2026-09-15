@@ -1,0 +1,26 @@
+{
+  "name": "gamble-terminal",
+  "version": "1.0.0",
+  "description": "<p align=\"center\">   <img src=\"https://img.shields.io/badge/python-3.9%E2%80%9312-blue?style=flat-square\" alt=\"Python 3.9-3.12\">   <img src=\"https://img.shields.io/badge/license-MIT-green?style=flat-square\" alt=\"MIT License\">   <img src=\"https://img.shields.io/badge/chart.js-4.x-ff6384?style=flat-square\" alt=\"Chart.js\">   <img src=\"https://img.shields.io/badge/tailwind-via%20CDN-38bdf8?style=flat-square\" alt=\"Tailwind\">   <img src=\"https://img.shields.io/badge/local--first-no%20tracking-10ff7a?style=flat-square\" alt=\"Local-first\"> </p>",
+  "main": "index.js",
+  "scripts": {
+    "build": "tailwindcss -i src/input.css -o src/output.css --minify",
+    "watch": "tailwindcss -i src/input.css -o src/output.css --watch",
+    "dev": "npm run watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pnkwars/edge-simulator.git"
+  },
+  "keywords": [],
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/pnkwars/edge-simulator/issues"
+  },
+  "homepage": "https://github.com/pnkwars/edge-simulator#readme",
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.3",
+    "tailwindcss": "^4.3.3"
+  }
+}

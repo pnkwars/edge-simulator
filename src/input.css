@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: Inter, ui-sans-system, system-ui, sans-serif;
+  --font-mono: JetBrains Mono, ui-monospace, monospace;
+}
+
+* { scrollbar-width: thin; scrollbar-color: #e4e4e7 transparent; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: #e4e4e7; border-radius: 99px; }
+::selection { background: #18181b; color: white; }
+.mono { font-family: JetBrains Mono, ui-monospace, monospace; }
