@@ -45,3 +45,7 @@ except ImportError:
         data = full.read_bytes()
         start_response("200 OK", [("Content-Type", ctype), ("Content-Length", str(len(data))), ("Cache-Control", "no-store")])
         return [data]
+
+# Vercel: unconditional top-level aliases (detected via static analysis)
+app = application
+handler = application

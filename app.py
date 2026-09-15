@@ -32,3 +32,10 @@ if __name__ == "__main__":
             httpd.serve_forever()
         except KeyboardInterrupt:
             print("\n  bye — bet small, edge big")
+
+# Vercel: expose top-level app/application/handler (re-export wsgi)
+try:
+    from wsgi import application as app  # noqa: F401
+    application = handler = app
+except Exception:
+    app = application = handler = None  # type: ignore[no-redef]
