@@ -4,810 +4,97 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <meta name="color-scheme" content="dark"/>
-<title>Monteq — Edge Simulator</title>
+<title>Monteq — Bet sizing you can trust</title>
 <link rel="icon" type="image/png" href="logo.png">
-<link rel="apple-touch-icon" href="logo.png">
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 <style>
-  /* NaN.xyz — Studio NaN typography (files expected in /fonts) */
   @font-face{font-family:'NaN';src:url('/fonts/NaN-Regular.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
   @font-face{font-family:'NaN';src:url('/fonts/NaN-Medium.woff2') format('woff2');font-weight:500;font-style:normal;font-display:swap}
   @font-face{font-family:'NaN';src:url('/fonts/NaN-Bold.woff2') format('woff2');font-weight:700;font-style:normal;font-display:swap}
   @font-face{font-family:'NaN';src:url('/fonts/NaN-Black.woff2') format('woff2');font-weight:900;font-style:normal;font-display:swap}
   @font-face{font-family:'NaN Mono';src:url('/fonts/NaN-Mono-Regular.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
-  .font-display{font-family:'NaN',system-ui,sans-serif}
-  .font-ui{font-family:'NaN',system-ui,sans-serif}
-  .mono{font-family:'NaN Mono','NaN',ui-monospace,monospace}
-  *{scrollbar-width:thin;scrollbar-color:#27272a transparent; border-radius:0!important}
-  ::-webkit-scrollbar{width:6px;height:6px} ::-webkit-scrollbar-thumb{background:#27272a}
-  ::selection{background:#ff5a33;color:#000}
-  .chart-wrap{position:relative;width:100%}
-  .chart-wrap canvas{width:100%!important}
+  *{border-radius:0!important}
 </style>
+<script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-black text-zinc-100 antialiased font-['NaN']" style="font-family:'NaN',system-ui,sans-serif">
-<!-- Top bar -->
+<body class="bg-black text-zinc-100 antialiased" style="font-family:'NaN',system-ui,sans-serif">
 <header class="sticky top-0 z-40 bg-black border-b border-zinc-800">
   <div class="max-w-[1440px] mx-auto px-5 md:px-6 h-[52px] flex items-center gap-6">
-    <a href="#" class="flex items-center gap-3 shrink-0">
-      <img src="logo.png" alt="Monteq" class="h-8 w-auto object-contain">
-    </a>
-    <nav class="flex-1 flex justify-center overflow-auto">
-      <div class="flex items-center gap-6 md:gap-8">
-        <button data-tab="kelly" class="tab active shrink-0 text-[11px] font-semibold tracking-[0.18em] uppercase py-4 border-b-2 border-[#ff5a33] text-white transition">Kelly</button>
-        <button data-tab="monte" class="tab shrink-0 text-[11px] font-semibold tracking-[0.18em] uppercase py-4 border-b-2 border-transparent text-zinc-500 hover:text-zinc-200 transition">Monte Carlo</button>
-        <button data-tab="lab" class="tab shrink-0 text-[11px] font-semibold tracking-[.18em] uppercase py-4 border-b-2 border-transparent text-zinc-500 hover:text-zinc-200 transition">Lab</button>
-        <button data-tab="parlay" class="tab shrink-0 text-[11px] font-semibold tracking-[.18em] uppercase py-4 border-b-2 border-transparent text-zinc-500 hover:text-zinc-200 transition">Parlay</button>
-        <button data-tab="risk" class="tab shrink-0 text-[11px] font-semibold tracking-[.18em] uppercase py-4 border-b-2 border-transparent text-zinc-500 hover:text-zinc-200 transition">Risk</button>
-      </div>
+    <a href="/" class="flex items-center gap-3 shrink-0"><img src="logo.png" alt="Monteq" class="h-8 w-auto object-contain"></a>
+    <nav class="flex-1 flex justify-center gap-6 md:gap-8">
+      <a href="/" class="text-[11px] font-semibold tracking-[0.18em] uppercase py-4 border-b-2 border-[#ff5a33] text-white">Home</a>
+      <a href="/app" class="text-[11px] font-semibold tracking-[0.18em] uppercase py-4 border-b-2 border-transparent text-zinc-400 hover:text-zinc-100">App</a>
+      <a href="/retro" class="hidden sm:inline text-[11px] font-semibold tracking-[0.18em] uppercase py-4 border-b-2 border-transparent text-zinc-400 hover:text-zinc-100">CRT</a>
     </nav>
-    <div class="hidden lg:flex items-center gap-3 shrink-0"></div>
-  </div>
-  <div class="md:hidden border-t border-zinc-800 px-5 py-2 flex items-center gap-2 text-[10px] tracking-[0.12em] uppercase text-zinc-600">
-    <span>Press</span><kbd class="px-1 py-0.5 border border-zinc-800 text-zinc-500 mono text-[10px]">1</kbd><kbd class="px-1 py-0.5 border border-zinc-800 text-zinc-500 mono">2</kbd><kbd class="px-1 py-0.5 border border-zinc-800 text-zinc-500 mono">3</kbd><kbd class="px-1 py-0.5 border border-zinc-800 text-zinc-500 mono">4</kbd><kbd class="px-1 py-0.5 border border-zinc-800 text-zinc-500 mono">5</kbd>
+    <a href="/app" class="hidden md:inline-flex items-center bg-white text-black text-[11px] font-bold tracking-[0.14em] uppercase px-4 py-2 hover:bg-zinc-200">Launch App →</a>
   </div>
 </header>
 
-<!-- Hero -->
-<div class="border-b border-zinc-800">
-  <div class="max-w-[1440px] mx-auto px-5 md:px-6 py-8 md:py-10 grid md:grid-cols-[1.15fr_0.85fr] gap-8 items-end">
-    <div>
-      <h1 class="font-display font-black tracking-[-0.04em] leading-[0.9] text-white text-[36px] md:text-[48px]">Bet sizing<br/>you can trust.</h1>
-      <p class="font-ui text-[13px] leading-relaxed text-zinc-400 mt-3 max-w-[560px]">Kelly, Monte Carlo, parlays and ruin — one brutally honest dashboard. No accounts, no tracking. Accessible anywhere, and your numbers still never leave the browser.</p>
+<section class="border-b border-zinc-800">
+  <div class="max-w-[1440px] mx-auto px-5 md:px-6 py-10 md:py-16 grid md:grid-cols-[1.15fr_0.85fr] gap-8 items-end">
+    <div class="relative">
+      <div class="absolute -top-6 -left-4 w-[120px] h-[80px] bg-[#1a2e1c] opacity-60 pointer-events-none hidden md:block"></div>
+      <div class="absolute -top-4 -left-2 w-[80px] h-[60px] bg-green-950 opacity-30 pointer-events-none hidden md:block"></div>
+      <p class="relative text-[10px] font-semibold tracking-[0.2em] uppercase text-zinc-500 mb-4">No accounts · No tracking · Runs in browser</p>
+      <h1 class="relative font-black tracking-[-0.04em] leading-[0.9] text-zinc-100 text-[40px] md:text-[56px]" style="font-family:'NaN',system-ui,sans-serif">Bet sizing<br/>you can trust.</h1>
+      <p class="text-[13px] leading-relaxed text-zinc-400 mt-4 max-w-[560px]">Kelly, Monte Carlo, parlays and ruin — one brutally honest dashboard. No accounts, no tracking. Accessible anywhere, and your numbers still never leave the browser.</p>
+      <div class="flex flex-wrap gap-3 mt-6">
+        <a href="/app" class="inline-flex items-center gap-2 bg-[#ff5a33] text-black font-bold tracking-[0.08em] uppercase text-[12px] px-6 py-3 hover:bg-[#ff6b4a]">Launch App →</a>
+        <a href="https://github.com/pnkwars/edge-simulator" class="inline-flex items-center gap-2 border border-zinc-800 text-zinc-300 font-semibold tracking-[0.08em] uppercase text-[12px] px-6 py-3 hover:border-zinc-600 hover:text-white">GitHub</a>
+      </div>
+      <p class="mono text-[11px] text-zinc-500 mt-3">Press <span class="text-zinc-300">1</span> Kelly · <span class="text-zinc-300">2</span> Monte Carlo · <span class="text-zinc-300">3</span> Lab · <span class="text-zinc-300">4</span> Parlay · <span class="text-zinc-300">5</span> Risk</p>
     </div>
-    <div class="hidden md:block"></div>
-  </div>
-</div>
-
-<main class="max-w-[1440px] mx-auto px-5 md:px-6 py-6 grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-6 items-start">
-  <!-- INPUT — flat, transparent, thin borders -->
-  <div class="border border-zinc-800 bg-transparent lg:sticky lg:top-[68px]">
-    <div class="px-4 py-3 border-b border-zinc-800 flex items-center justify-between">
-      <div class="flex items-center gap-2"><span class="text-[11px] font-bold tracking-[0.14em] uppercase text-white" id="leftTitle">Kelly</span><span class="text-[11px] tracking-[0.08em] uppercase text-zinc-500">— inputs</span></div>
-    </div>
-    <div class="p-4 left-panels">
-      <!-- KELLY -->
-      <div class="active space-y-5" data-panel="kelly">
-        <div>
-          <label class="flex justify-between text-[10px] font-semibold tracking-[0.14em] uppercase text-zinc-400 mb-2"><span class="text-zinc-100">Win probability</span><span class="font-normal normal-case tracking-normal mono text-zinc-500">55% or 0.55</span></label>
-          <div class="flex gap-2">
-            <input id="k-p" value="55%" placeholder="55%" autocomplete="off" inputmode="decimal" class="flex-1 w-full bg-transparent border border-zinc-800 px-3 py-2.5 text-[13px] mono text-white placeholder:text-zinc-600 focus:outline-none focus:border-zinc-600 transition"/>
-            <input id="k-p2" type="range" min="5" max="85" value="55" class="w-[110px] accent-[#ff5a33] self-center hidden sm:block"/>
-          </div>
-          <div id="k-p-err" class="hidden mt-2 text-xs mono text-red-400 border border-red-900 bg-red-950/30 px-2.5 py-1.5"></div>
-          <div class="flex gap-1.5 flex-wrap mt-2">
-            <button data-kp="52%" class="chip px-3 py-1 border border-zinc-800 mono text-xs text-zinc-400 hover:text-white hover:border-zinc-600">52%</button>
-            <button data-kp="55%" class="chip px-3 py-1 bg-white text-black mono text-xs font-bold">55%</button>
-            <button data-kp="60%" class="chip px-3 py-1 border border-zinc-800 mono text-xs text-zinc-400 hover:text-white">60%</button>
-            <button data-kp="65%" class="chip px-3 py-1 border border-zinc-800 mono text-xs text-zinc-400 hover:text-white">65%</button>
-          </div>
-        </div>
-        <div>
-          <label class="flex justify-between text-[10px] font-semibold tracking-[0.14em] uppercase text-zinc-400 mb-2"><span class="text-zinc-100">Odds</span><span class="font-normal normal-case tracking-normal mono text-zinc-500">2.5 · +150 · 5/2</span></label>
-          <input id="k-odds" value="2.00" placeholder="2.00" autocomplete="off" class="w-full bg-transparent border border-zinc-800 px-3 py-2.5 text-[13px] mono text-white placeholder:text-zinc-600 focus:outline-none focus:border-zinc-600 transition"/>
-          <div id="k-odds-err" class="hidden mt-2 text-xs mono text-red-400 border border-red-900 bg-red-950/30 px-2.5 py-1.5"></div>
-          <div class="flex gap-1.5 flex-wrap mt-2">
-            <button data-ko="1.91" class="chip px-3 py-1 border border-zinc-800 mono text-xs text-zinc-400">1.91</button>
-            <button data-ko="2.00" class="chip px-3 py-1 bg-white text-black mono text-xs font-bold">2.00</button>
-            <button data-ko="+150" class="chip px-3 py-1 border border-zinc-800 mono text-xs text-zinc-400">+150</button>
-            <button data-ko="5/2" class="chip px-3 py-1 border border-zinc-800 mono text-xs text-zinc-400">5/2</button>
-          </div>
-        </div>
-        <div>
-          <label class="text-[10px] font-semibold tracking-[0.14em] uppercase text-zinc-100 block mb-2">Bankroll $</label>
-          <input id="k-br" type="number" value="1000" min="1" step="100" inputmode="numeric" class="w-full bg-transparent border border-zinc-800 px-3 py-2.5 text-[13px] mono text-white focus:outline-none focus:border-zinc-600"/>
-          <div id="k-br-err" class="hidden mt-2 text-xs mono text-red-400 border border-red-900 bg-red-950/30 px-2.5 py-1.5"></div>
-        </div>
-        <p class="mono text-[11px] leading-relaxed text-zinc-500"><span class="text-zinc-300">+200=3.0</span> · <span class="text-zinc-300">−110=1.91</span> · <span class="text-zinc-300">5/2=3.5</span></p>
-      </div>
-      <!-- MONTE -->
-      <div class="space-y-4 hidden" data-panel="monte">
-        <div><label class="text-[10px] font-semibold tracking-[0.14em] uppercase text-zinc-100">Bankroll</label><input id="m-br" type="number" value="1000" min="1" class="mt-2 w-full bg-transparent border border-zinc-800 px-3 py-2.5 mono text-white focus:outline-none focus:border-zinc-600"/><div id="m-br-err" class="hidden mt-2 text-xs mono text-red-400 border border-red-900 bg-red-950/30 px-2.5 py-1.5"></div></div>
-        <div><label class="flex justify-between text-[10px] font-semibold tracking-[0.14em] uppercase text-zinc-400"><span class="text-zinc-100">Win prob</span><span class="font-normal normal-case mono">55% or 0.55</span></label><input id="m-p" value="55%" class="mt-2 w-full bg-transparent border border-zinc-800 px-3 py-2.5 mono text-white"/><div id="m-p-err" class="hidden mt-2 text-xs mono text-red-400 border border-red-900 bg-red-950/30 px-2.5 py-1.5"></div></div>
-        <div><label class="text-[10px] font-semibold tracking-[0.14em] uppercase text-zinc-100">Odds</label><input id="m-odds" value="2.00" class="mt-2 w-full bg-transparent border border-zinc-800 px-3 py-2.5 mono text-white"/><div id="m-odds-err" class="hidden mt-2 text-xs mono text-red-400 border border-red-900 bg-red-950/30 px-2.5 py-1.5"></div></div>
-        <div><label class="flex justify-between text-[10px] font-semibold tracking-[0.14em] uppercase text-zinc-400"><span class="text-zinc-100">Bet size</span><span class="font-normal normal-case mono">% of bankroll</span></label><input id="m-bet" placeholder="auto: half Kelly" class="mt-2 w-full bg-transparent border border-zinc-800 px-3 py-2.5 mono text-white placeholder:text-zinc-600"/><div id="m-kellyHint" class="mt-2 text-[11px] mono text-zinc-500"></div><div id="m-bet-err" class="hidden mt-2 text-xs mono text-red-400 border border-red-900 bg-red-950/30 px-2.5 py-1.5"></div></div>
-        <div class="grid grid-cols-2 gap-3">
-          <div><label class="text-[10px] font-semibold tracking-[0.14em] uppercase text-zinc-400">Bets</label><input id="m-bets" type="number" value="500" min="1" max="5000" class="mt-2 w-full bg-transparent border border-zinc-800 px-3 py-2.5 mono text-white"/><div id="m-bets-err" class="hidden mt-2 text-xs mono text-red-400 border border-red-900 bg-red-950/30 px-2.5 py-1.5"></div></div>
-          <div><label class="text-[10px] font-semibold tracking-[0.14em] uppercase text-zinc-400">Sims</label><input id="m-sims" type="number" value="5000" min="100" max="50000" step="100" class="mt-2 w-full bg-transparent border border-zinc-800 px-3 py-2.5 mono text-white"/><div id="m-sims-err" class="hidden mt-2 text-xs mono text-red-400 border border-red-900 bg-red-950/30 px-2.5 py-1.5"></div></div>
-        </div>
-        <button id="m-run" class="w-full bg-[#ff5a33] text-black font-bold tracking-[0.08em] uppercase text-[12px] py-3 hover:bg-[#ff6b4a] active:translate-y-px transition">▶ Run simulation</button>
-        <div class="grid grid-cols-2 gap-2"><button id="m-half" class="border border-zinc-800 text-zinc-300 mono text-xs font-semibold py-2.5 hover:border-zinc-600 hover:text-white">Half Kelly</button><button id="m-quarter" class="border border-zinc-800 text-zinc-300 mono text-xs font-semibold py-2.5 hover:border-zinc-600">Quarter</button></div>
-      </div>
-      <!-- LAB -->
-      <div class="space-y-4 hidden" data-panel="lab">
-        <div><label class="text-[10px] font-semibold tracking-[0.14em] uppercase text-zinc-100">Win prob</label><input id="l-p" value="55%" class="mt-2 w-full bg-transparent border border-zinc-800 px-3 py-2.5 mono text-white"/><div id="l-p-err" class="hidden mt-2 text-xs mono text-red-400 border border-red-900 bg-red-950/30 px-2.5 py-1.5"></div></div>
-        <div><label class="text-[10px] font-semibold tracking-[0.14em] uppercase text-zinc-100">Odds</label><input id="l-odds" value="2.00" class="mt-2 w-full bg-transparent border border-zinc-800 px-3 py-2.5 mono text-white"/><div id="l-odds-err" class="hidden mt-2 text-xs mono text-red-400 border border-red-900 bg-red-950/30 px-2.5 py-1.5"></div></div>
-        <div><label class="text-[10px] font-semibold tracking-[0.14em] uppercase text-zinc-100">Bankroll</label><input id="l-br" type="number" value="1000" min="1" class="mt-2 w-full bg-transparent border border-zinc-800 px-3 py-2.5 mono text-white"/><div id="l-br-err" class="hidden mt-2 text-xs mono text-red-400 border border-red-900 bg-red-950/30 px-2.5 py-1.5"></div></div>
-        <div class="grid grid-cols-2 gap-3">
-          <div><label class="text-[10px] font-semibold tracking-[0.14em] uppercase text-zinc-400">Bets / sim</label><input id="l-bets" type="number" value="300" min="10" class="mt-2 w-full bg-transparent border border-zinc-800 px-3 py-2.5 mono text-white"/></div>
-          <div><label class="text-[10px] font-semibold tracking-[0.14em] uppercase text-zinc-400">Sims / frac</label><input id="l-sims" type="number" value="2000" min="200" class="mt-2 w-full bg-transparent border border-zinc-800 px-3 py-2.5 mono text-white"/></div>
-        </div>
-        <button id="l-run" class="w-full bg-[#ff5a33] text-black font-bold tracking-[0.08em] uppercase text-[12px] py-3">▶ Sweep 0.25× → 1.5× Kelly</button>
-        <p class="mono text-[11px] text-zinc-500">5 fractions head-to-head. Best median ≠ best P5.</p>
-      </div>
-      <!-- PARLAY -->
-      <div class="space-y-4 hidden" data-panel="parlay">
-        <p class="mono text-[11px] leading-relaxed text-zinc-500">Parlay = all legs must hit. Assumes <b class="text-white">independent</b>. Combined p & dec = product.</p>
-        <div id="parlay-legs" class="space-y-2"></div>
-        <div class="grid grid-cols-2 gap-2"><button id="parlay-add" class="border border-zinc-800 text-zinc-300 mono text-xs font-semibold py-2.5 hover:border-zinc-600">+ Add leg</button><button id="parlay-clear" class="border border-zinc-800 text-zinc-300 mono text-xs font-semibold py-2.5">Clear</button></div>
-        <div class="flex gap-1.5 flex-wrap"><button data-parlay="preset2" class="px-3 py-1 bg-white text-black mono text-xs font-bold">2-leg ex</button><button data-parlay="preset3" class="px-3 py-1 border border-zinc-800 mono text-xs text-zinc-400">3-leg ex</button></div>
-        <div id="parlay-hint" class="mono text-[11px] text-zinc-500"></div>
-        <div class="h-px bg-zinc-800"></div>
-        <div><label class="text-[10px] font-semibold tracking-[0.14em] uppercase text-zinc-100">Bankroll $</label><input id="parlay-br" type="number" value="1000" min="1" class="mt-2 w-full bg-transparent border border-zinc-800 px-3 py-2.5 mono text-white"/><div id="parlay-br-err" class="hidden mt-2 text-xs mono text-red-400 border border-red-900 bg-red-950/30 px-2.5 py-1.5"></div></div>
-        <button id="parlay-monte" class="w-full bg-[#ff5a33] text-black font-bold tracking-[0.08em] uppercase text-[12px] py-3">▶ Monte Carlo — half Kelly</button>
-      </div>
-      <!-- RISK -->
-      <div class="space-y-4 hidden" data-panel="risk">
-        <div><label class="text-[10px] font-semibold tracking-[0.14em] uppercase text-zinc-100">Win prob</label><input id="r-p" value="55%" class="mt-2 w-full bg-transparent border border-zinc-800 px-3 py-2.5 mono text-white"/><div id="r-p-err" class="hidden mt-2 text-xs mono text-red-400 border border-red-900 bg-red-950/30 px-2.5 py-1.5"></div></div>
-        <div><label class="flex justify-between text-[10px] font-semibold tracking-[0.14em] uppercase text-zinc-400"><span>Bet fraction</span><span class="mono font-normal">% per bet</span></label><input id="r-f" value="5%" class="mt-2 w-full bg-transparent border border-zinc-800 px-3 py-2.5 mono text-white"/><div id="r-f-err" class="hidden mt-2 text-xs mono text-red-400 border border-red-900 bg-red-950/30 px-2.5 py-1.5"></div></div>
-        <div class="h-px bg-zinc-800"></div>
-        <div class="text-[10px] font-semibold tracking-[0.14em] uppercase text-zinc-400">Gambler's ruin</div>
-        <div><label class="text-[10px] font-semibold tracking-[0.14em] uppercase text-zinc-400">Start</label><input id="r-start" type="number" value="1000" min="1" class="mt-2 w-full bg-transparent border border-zinc-800 px-3 py-2.5 mono text-white"/></div>
-        <div><label class="text-[10px] font-semibold tracking-[0.14em] uppercase text-zinc-400">Target</label><input id="r-target" type="number" value="2000" min="1" class="mt-2 w-full bg-transparent border border-zinc-800 px-3 py-2.5 mono text-white"/></div>
-        <div><label class="text-[10px] font-semibold tracking-[0.14em] uppercase text-zinc-400">Stake / bet</label><input id="r-stake" type="number" value="10" min="1" class="mt-2 w-full bg-transparent border border-zinc-800 px-3 py-2.5 mono text-white"/></div>
-        <div id="r-stake-err" class="hidden text-xs mono text-red-400 border border-red-900 bg-red-950/30 px-2.5 py-1.5"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- RESULTS — brutalist cards -->
-  <div class="space-y-4 min-w-0">
-    <div class="view active space-y-4" id="view-kelly">
-      <div class="border border-zinc-800">
-        <div class="px-4 py-3 border-b border-zinc-800 flex items-center gap-3">
-          <h3 class="font-display font-bold text-[12px] tracking-[0.08em] uppercase text-white">Kelly Criterion <span class="font-ui font-normal normal-case tracking-normal text-zinc-500">f* = (bp − q)/b</span></h3>
-          <span id="kellyTag" class="ml-auto mono text-[10px] font-semibold tracking-[0.06em] px-2 py-1 border border-zinc-800 text-zinc-500">—</span>
-        </div>
-        <div class="p-4 space-y-4">
-          <div id="kellyKVs" class="grid grid-cols-2 gap-3"></div>
-          <div id="kellyCallout" class="flex gap-3 items-start border border-zinc-800 px-3 py-3 mono text-[12px] leading-relaxed text-zinc-300"><span class="shrink-0 w-6 h-6 grid place-items-center border border-zinc-800 mono text-xs">◈</span><span>Enter probability & odds → Kelly tells optimal size.</span></div>
-          <div class="overflow-auto -mx-1 px-1"><table id="kellyTable" class="w-full mono text-xs border border-zinc-800"></table></div>
-          <div class="chart-wrap border border-zinc-800 p-2 bg-black"><canvas id="kellyChart" height="280"></canvas></div>
-          <p class="mono text-[11px] text-zinc-500">X = bet fraction · Y = expected log-growth / bet. <span class="text-[#ff5a33]">Half Kelly ≈ 75% growth with ~½ variance.</span></p>
-        </div>
-      </div>
-      <div class="border border-zinc-800">
-        <div class="px-4 py-3 border-b border-zinc-800 flex items-center gap-2"><h3 class="font-display font-bold text-[11px] tracking-[0.12em] uppercase text-white">Stake on bankroll</h3></div>
-        <div class="p-4"><div id="stakeKVs" class="grid grid-cols-2 gap-3"></div><p id="kellyNote" class="mono text-[11px] text-zinc-500 mt-3"></p></div>
-      </div>
-    </div>
-    <div class="view hidden space-y-4" id="view-monte">
-      <div class="border border-zinc-800">
-        <div class="px-4 py-3 border-b border-zinc-800 flex items-center gap-2">
-          <h3 class="font-display font-bold text-[11px] tracking-[0.12em] uppercase text-white">Monte Carlo <span id="monteSub" class="font-ui font-normal normal-case tracking-normal text-zinc-500">— press RUN</span></h3>
-          <span id="monteTag" class="ml-auto mono text-[10px] font-semibold tracking-[0.06em] px-2 py-1 border border-zinc-800 text-zinc-500">Ready</span>
-        </div>
-        <div class="p-4">
-          <div id="monteEmpty" class="border border-dashed border-zinc-800 p-8 text-center"><div class="font-display font-bold text-white text-sm">Press Run to simulate</div><div class="mono text-xs text-zinc-500 mt-1">Distribution + 50 equity curves. Try half Kelly first.</div></div>
-          <div id="monteResults" class="hidden space-y-4">
-            <div id="monteKVs" class="grid grid-cols-2 gap-3"></div>
-            <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
-              <div class="border border-zinc-800 p-2 bg-black"><div class="mono text-[10px] font-semibold tracking-[0.08em] uppercase text-zinc-500 mb-2 px-1">Final bankroll distribution</div><div class="chart-wrap"><canvas id="histChart" height="260"></canvas></div></div>
-              <div class="border border-zinc-800 p-2 bg-black"><div class="mono text-[10px] font-semibold tracking-[0.08em] uppercase text-zinc-500 mb-2 px-1">Equity curves — 50 samples <span class="text-white">(white = median)</span></div><div class="chart-wrap"><canvas id="equityChart" height="260"></canvas></div></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="view hidden space-y-4" id="view-lab">
-      <div class="border border-zinc-800">
-        <div class="px-4 py-3 border-b border-zinc-800 flex items-center gap-2"><h3 class="font-display font-bold text-[11px] tracking-[0.12em] uppercase text-white">Lab — Kelly fractions</h3><span id="labTag" class="ml-auto mono text-[10px] font-semibold tracking-[0.06em] px-2 py-1 border border-zinc-800 text-zinc-500">Ready</span></div>
-        <div class="p-4 space-y-4">
-          <div id="labEmpty" class="border border-dashed border-zinc-800 p-8 text-center"><div class="font-display font-bold text-white text-sm">Press Sweep</div><div class="mono text-xs text-zinc-500 mt-1">0.25×, 0.5×, 0.75×, 1×, 1.5× head-to-head. Best median highlighted.</div></div>
-          <div id="labResults" class="hidden space-y-4">
-            <div class="overflow-auto -mx-1 px-1"><table id="labTable" class="w-full mono text-xs border border-zinc-800"></table></div>
-            <div class="chart-wrap border border-zinc-800 p-2 bg-black"><canvas id="labChart" height="320"></canvas></div>
-            <p class="mono text-[11px] text-zinc-500">Band = P5 → median. <span class="text-[#ff5a33]">1.5× often wins median but spikes ruin.</span></p>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="view hidden space-y-4" id="view-parlay">
-      <div class="border border-zinc-800">
-        <div class="px-4 py-3 border-b border-zinc-800 flex items-center gap-2"><h3 class="font-display font-bold text-[11px] tracking-[0.12em] uppercase text-white">Parlay — Combined accumulator</h3><span id="parlayTag" class="ml-auto mono text-[10px] font-semibold tracking-[0.06em] px-2 py-1 border border-zinc-800 text-zinc-500">—</span></div>
-        <div class="p-4 space-y-4">
-          <div id="parlayCallout" class="flex gap-3 items-start border border-zinc-800 px-3 py-3 mono text-[12px] leading-relaxed text-zinc-300"><span class="shrink-0 w-6 h-6 grid place-items-center border border-zinc-800 mono text-xs">⬢</span><span>Add 2+ legs. Combined is product — variance explodes, Kelly shrinks fast.</span></div>
-          <div id="parlayKVs" class="grid grid-cols-2 gap-3"></div>
-          <div class="overflow-auto -mx-1 px-1"><table id="parlayTable" class="w-full mono text-xs border border-zinc-800"></table></div>
-          <div id="parlayStakeKVs" class="grid grid-cols-2 gap-3"></div>
-          <div id="parlayMonteSection" class="hidden space-y-4">
-            <div class="h-px bg-zinc-800"></div>
-            <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
-              <div class="border border-zinc-800 p-2 bg-black"><div class="mono text-[10px] font-semibold tracking-[0.08em] uppercase text-zinc-500 mb-2 px-1">Parlay — Final bankroll</div><div class="chart-wrap"><canvas id="parlayHist" height="240"></canvas></div></div>
-              <div class="border border-zinc-800 p-2 bg-black"><div class="mono text-[10px] font-semibold tracking-[0.08em] uppercase text-zinc-500 mb-2 px-1">Parlay — Equity curves</div><div class="chart-wrap"><canvas id="parlayEquity" height="240"></canvas></div></div>
-            </div>
-            <div id="parlayMonteKVs" class="grid grid-cols-2 gap-3"></div>
-          </div>
-          <div id="parlayEmpty" class="border border-dashed border-zinc-800 p-8 text-center"><div class="font-display font-bold text-white text-sm">Add legs on the left</div><div class="mono text-xs text-zinc-500 mt-1">Try “3-leg ex”: 60% @1.91 + 55% @2.10 + 70% @1.50</div></div>
-        </div>
-      </div>
-    </div>
-    <div class="view hidden space-y-4" id="view-risk">
-      <div class="border border-zinc-800">
-        <div class="px-4 py-3 border-b border-zinc-800 flex items-center gap-2"><h3 class="font-display font-bold text-[11px] tracking-[0.12em] uppercase text-white">Risk — Streaks & Drawdown</h3><span class="mono text-[10px] font-semibold tracking-[0.06em] px-2 py-1 border border-zinc-800 text-zinc-500 ml-auto">Math</span></div>
-        <div class="p-4 space-y-4">
-          <div id="riskKVs" class="grid grid-cols-2 gap-3"></div>
-          <div class="overflow-auto -mx-1 px-1"><table id="riskTable" class="w-full mono text-xs border border-zinc-800"></table></div>
-          <div class="chart-wrap border border-zinc-800 p-2 bg-black"><canvas id="riskChart" height="220"></canvas></div>
-          <p class="mono text-[11px] text-zinc-500">At x% per bet, n losses to −50% = log(0.5)/log(1−x). Even small edges drown in streaks — size down.</p>
+    <div class="hidden md:block">
+      <div class="border border-zinc-800 p-4 bg-transparent">
+        <div class="text-[10px] font-semibold tracking-[0.14em] uppercase text-zinc-400 mb-3">At a glance</div>
+        <div class="grid grid-cols-2 gap-3 mono text-xs">
+          <div class="border border-zinc-800 p-3"><div class="text-zinc-500 uppercase tracking-[0.1em] text-[10px]">Kelly f*</div><div class="text-zinc-100 font-bold text-[13px] mt-1">4.2% → 2.1% half</div></div>
+          <div class="border border-zinc-800 p-3"><div class="text-zinc-500 uppercase tracking-[0.1em] text-[10px]">P5 · Median · P95</div><div class="text-zinc-100 font-bold text-[13px] mt-1">Spread, not average</div></div>
+          <div class="border border-zinc-800 p-3"><div class="text-zinc-500 uppercase tracking-[0.1em] text-[10px]">Parlay f*</div><div class="text-zinc-100 font-bold text-[13px] mt-1">Singles often safer</div></div>
+          <div class="border border-zinc-800 p-3 bg-[#1a2e1c]/40"><div class="text-zinc-500 uppercase tracking-[0.1em] text-[10px]">Ruin</div><div class="text-zinc-100 font-bold text-[13px] mt-1">Streaks kill edges</div></div>
         </div>
       </div>
     </div>
   </div>
-</main>
+</section>
 
-<footer class="max-w-[1440px] mx-auto px-6 pb-8 pt-4 flex flex-wrap gap-3 items-center mono text-[11px] text-zinc-600 border-t border-zinc-800 mt-2">
-  <span class="font-semibold tracking-[0.06em] uppercase">Edge Simulator · Local only</span><span class="hidden sm:inline mono">f*=(bp−q)/b · EV=p·b−q · g=p·ln(1+fb)+q·ln(1−f)</span><a href="#" id="resetBtn" class="text-zinc-400 hover:text-white underline decoration-zinc-700 underline-offset-2">Reset</a><span id="footStats" class="mono"></span><span class="ml-auto mono">55% or 0.55 · 2.5 / +150 / 5/2</span>
+<section class="max-w-[1440px] mx-auto px-5 md:px-6 py-8 grid md:grid-cols-4 gap-4">
+  <a href="/app" class="group border border-zinc-800 p-5 hover:bg-white/[0.02]">
+    <div class="text-[10px] font-semibold tracking-[0.14em] uppercase text-zinc-500">01 — Kelly</div>
+    <div class="text-[15px] font-bold text-zinc-100 mt-2">Optimal size, sane size</div>
+    <p class="text-[12px] leading-relaxed text-zinc-400 mt-2">f* = (bp−q)/b. Half keeps ~75% growth with ~½ variance.</p>
+    <span class="inline-block mt-3 text-[11px] font-semibold tracking-[0.08em] uppercase text-zinc-100 group-hover:text-white">Open Kelly →</span>
+  </a>
+  <a href="/app" onclick="localStorage.setItem('gt.active', JSON.stringify('monte'))" class="group border border-zinc-800 p-5 hover:bg-white/[0.02]">
+    <div class="text-[10px] font-semibold tracking-[0.14em] uppercase text-zinc-500">02 — Monte Carlo</div>
+    <div class="text-[15px] font-bold text-zinc-100 mt-2">5,000 futures</div>
+    <p class="text-[12px] leading-relaxed text-zinc-400 mt-2">P5 / median / P95. If P5 nears zero, you bet too big.</p>
+    <span class="inline-block mt-3 text-[11px] font-semibold tracking-[0.08em] uppercase text-zinc-100 group-hover:text-white">Run simulation →</span>
+  </a>
+  <a href="/app" class="group border border-zinc-800 p-5 hover:bg-white/[0.02]">
+    <div class="text-[10px] font-semibold tracking-[0.14em] uppercase text-zinc-500">03 — Lab & Parlay</div>
+    <div class="text-[15px] font-bold text-zinc-100 mt-2">Fractions & accumulators</div>
+    <p class="text-[12px] leading-relaxed text-zinc-400 mt-2">0.25×→1.5× sweep. Parlays: product math, variance explodes.</p>
+    <span class="inline-block mt-3 text-[11px] font-semibold tracking-[0.08em] uppercase text-zinc-100 group-hover:text-white">Compare →</span>
+  </a>
+  <a href="/app" class="group border border-zinc-800 p-5 bg-[#1a2e1c]/20 hover:bg-[#1a2e1c]/30">
+    <div class="text-[10px] font-semibold tracking-[0.14em] uppercase text-zinc-500">04 — Risk</div>
+    <div class="text-[15px] font-bold text-zinc-100 mt-2">Streaks & ruin</div>
+    <p class="text-[12px] leading-relaxed text-zinc-400 mt-2">qⁿ, drawdown, gambler's ruin. Small edges drown in streaks.</p>
+    <span class="inline-block mt-3 text-[11px] font-semibold tracking-[0.08em] uppercase text-zinc-100 group-hover:text-white">Check risk →</span>
+  </a>
+</section>
+
+<section class="max-w-[1440px] mx-auto px-5 md:px-6 pb-8">
+  <div class="border border-zinc-800 p-5 flex flex-wrap gap-4 items-center justify-between">
+    <div class="mono text-[11px] text-zinc-400">Odds: <span class="text-zinc-100">2.50</span> or <span class="text-zinc-100">+150 / −110</span> or <span class="text-zinc-100">5/2</span> · Prob: <span class="text-zinc-100">55%</span> or <span class="text-zinc-100">0.55</span> · Shortcuts: <span class="text-zinc-100">1–5</span></div>
+    <a href="/app" class="bg-white text-black font-bold tracking-[0.08em] uppercase text-[11px] px-5 py-2.5">Enter App</a>
+  </div>
+</section>
+
+<footer class="max-w-[1440px] mx-auto px-5 md:px-6 pb-8 pt-4 border-t border-zinc-800 flex flex-wrap gap-3 items-center mono text-[11px] text-zinc-600">
+  <span class="font-semibold tracking-[0.06em] uppercase text-zinc-400">Monteq · No tracking</span>
+  <span class="hidden sm:inline">f*=(bp−q)/b · EV=p·b−q</span>
+  <span class="ml-auto">Local-first — numbers never leave browser</span>
 </footer>
-<div id="toast" class="fixed right-4 bottom-4 z-50 hidden max-w-[360px] border border-zinc-800 bg-zinc-900 text-zinc-100 px-3 py-2.5 mono text-xs"></div>
-
-<script>
-(function(){
-"use strict";
-function oddsToDecimal(s){
-  s=String(s).trim(); if(!s) throw new Error("Odds is required");
-  if(s.indexOf("/")!==-1){ var a=s.split("/"); if(a.length===2){ var x=parseFloat(a[0]), y=parseFloat(a[1]); if(isFinite(x)&&isFinite(y)&&y!==0) return x/y+1; } }
-  if(/^[+-]\d+(\.\d+)?$/.test(s)){ var v=parseFloat(s); return v>0? v/100+1 : 100/Math.abs(v)+1; }
-  var v=parseFloat(s); if(!isFinite(v)) throw new Error("Odds must be a number >1 (e.g. 2.00, +150, 5/2)");
-  if(v<=1) throw new Error("Odds must be >1");
-  if(v>1000) throw new Error("Odds too large");
-  return v;
-}
-function parseProb(s){
-  s=String(s).trim(); if(!s) throw new Error("Probability is required");
-  if(s.charAt(s.length-1)==="%"){ var v=parseFloat(s); if(!isFinite(v)) throw new Error("Use a number like 55%"); if(v<0||v>100) throw new Error("Probability must be 0–100%"); return v/100; }
-  var v=parseFloat(s); if(!isFinite(v)) throw new Error("Use a number like 55% or 0.55");
-  if(v<0) throw new Error("Probability cannot be negative");
-  if(v>1 && v<=100) return v/100;
-  if(v>1) throw new Error("Probability must be 0–100%");
-  if(v<=0 || v>=1) throw new Error("Probability must be between 0 and 100% (exclusive)");
-  return v;
-}
-function parseBankroll(s){
-  var v=parseFloat(String(s).trim()); if(!isFinite(v)) throw new Error("Bankroll must be a number");
-  if(v<=0) throw new Error("Bankroll must be >0"); if(v>1e12) throw new Error("Bankroll too large"); return v;
-}
-function parseBetPct(s,fallback){
-  s=String(s).trim(); if(!s) return fallback;
-  if(s.charAt(s.length-1)==="%"){ var v=parseFloat(s); if(!isFinite(v)) throw new Error("Bet size must be like 5% or 0.05"); if(v<0) throw new Error("Bet size cannot be negative"); if(v>100) throw new Error("Bet size must be 0–100%"); return v/100; }
-  var v=parseFloat(s); if(!isFinite(v)) throw new Error("Bet size must be like 5% or 0.05");
-  if(v<0) throw new Error("Bet size cannot be negative"); return v>1? v/100 : v;
-}
-function parseIntStrict(el, label, min, max){
-  var v=parseInt(String(el.value).trim(),10); if(!isFinite(v)) throw new Error(label+" must be a number");
-  if(v<min) throw new Error(label+" must be ≥"+min); if(v>max) throw new Error(label+" must be ≤"+max); return v;
-}
-function kellyStats(p,dec){ var b=dec-1,q=1-p,f=(b*p-q)/b,ev=p*b-q,implied=1/dec,edge=p-implied,g=0,dbl=Infinity; if(f>0&&f<1){g=p*Math.log(1+f*b)+q*Math.log(1-f); if(g>0) dbl=Math.log(2)/g;} return {b:b,f:f,ev:ev,g:g,dbl:dbl,edge:edge,implied:implied}; }
-function parlayCombined(legs){ var pc=1,dc=1; for(var i=0;i<legs.length;i++){ pc*=legs[i].p; dc*=legs[i].dec; } return {p:pc,dec:dc}; }
-function monteCarlo(bankroll,p,dec,f,nBets,nSims){
-  var b=dec-1, finals=new Float64Array(nSims), paths=[], bust=0;
-  for(var i=0;i<nSims;i++){ var br=bankroll, hist=[br]; for(var k=0;k<nBets;k++){ if(br<=0.01) break; var stake=br*f; if(stake>br) stake=br; if(Math.random()<p) br+=stake*b; else br-=stake; hist.push(br); } finals[i]=br; if(br<bankroll*0.1) bust++; if(paths.length<50) paths.push(hist); }
-  var sorted=Array.from(finals).sort(function(a,b){return a-b;});
-  function q(p){ return sorted[Math.min(nSims-1, Math.floor(sorted.length*p))]; }
-  var mean=sorted.reduce(function(a,b){return a+b;},0)/nSims;
-  return {finals:sorted,mean:mean,median:q(0.5),p5:q(0.05),p10:q(0.10),p90:q(0.90),p95:q(0.95),hi:sorted[sorted.length-1],lo:sorted[0],bust:bust/nSims,profit:sorted.filter(function(v){return v>bankroll;}).length/nSims,ruined:sorted.filter(function(v){return v<1;}).length/nSims,paths:paths};
-}
-function fmtMoney(x){ if(!isFinite(x)) return "—"; if(x>=1e9) return "$"+(x/1e6).toFixed(2)+"M"; if(x>=1e6) return "$"+(x/1e3).toFixed(1)+"k"; if(x>=1e3) return "$"+x.toFixed(0); return "$"+x.toFixed(2); }
-function saveLS(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
-function loadLS(k,d){ try{ var v=localStorage.getItem(k); return v? JSON.parse(v):d; }catch(e){ return d; } }
-function toast(msg, ok){
-  var t=document.getElementById("toast");
-  t.textContent=msg; t.className="fixed right-4 bottom-4 z-50 max-w-[360px] border px-3 py-2.5 mono text-xs "+(ok?"border-[#ff5a33]/30 bg-black text-[#ff5a33]":"border-zinc-800 bg-zinc-900 text-zinc-100");
-  t.style.display="block"; clearTimeout(t._id); t._id=setTimeout(function(){t.style.display="none";}, 2600);
-}
-function setErr(id, msg){
-  var errEl=document.getElementById(id); if(!errEl) return;
-  var inputId=id.replace(/-err$/,""); var inp=document.getElementById(inputId);
-  if(msg){ errEl.textContent="✘ "+msg; errEl.classList.remove("hidden"); if(inp){ inp.classList.add("!border-red-500"); inp.setAttribute("aria-invalid","true"); } }
-  else { errEl.textContent=""; errEl.classList.add("hidden"); if(inp){ inp.classList.remove("!border-red-500"); inp.removeAttribute("aria-invalid"); } }
-}
-function blockLetters(e){
-  if(e.ctrlKey||e.metaKey||e.altKey) return;
-  if(e.key.length>1) return;
-  if(/[0-9.\/%+\-]/.test(e.key)) return;
-  e.preventDefault();
-}
-
-// ── Chart.js — brutalist: stark grid, coral/white accents ──
-Chart.defaults.color="#52525b"; Chart.defaults.borderColor="rgba(39,39,42,.8)"; Chart.defaults.font.family="'NaN Mono'";
-var charts={};
-function destroyChart(id){ if(charts[id]){ try{ charts[id].destroy(); }catch(e){} delete charts[id]; } }
-function makeKellyChart(p,dec,fStar){
-  destroyChart("kelly");
-  var b=dec-1; function gOf(f){ if(f<=0) return 0; if(f>=1) return null; return p*Math.log(1+f*b)+(1-p)*Math.log(1-f); }
-  var labels=[], data=[];
-  for(var i=0;i<=120;i++){ var f=i/120*1.2; labels.push((f*100).toFixed(1)+"%"); data.push(gOf(f)); }
-  var ctx=document.getElementById("kellyChart").getContext("2d");
-  charts.kelly=new Chart(ctx,{
-    type:"line",
-    data:{labels:labels,datasets:[
-      {label:"Growth / bet", data:data, borderColor:"#fff", backgroundColor:"rgba(255,255,255,.04)", borderWidth:1.5, tension:.35, pointRadius:0, fill:true},
-      ...(fStar>0&&fStar<1.2 ? [{type:"scatter", label:"f* "+(fStar*100).toFixed(2)+"%", data:[{x:Math.round(fStar/1.2*120), y:gOf(fStar)}], backgroundColor:"#ff5a33", borderColor:"#ff5a33", pointRadius:5, pointHoverRadius:6, showLine:false}] : []),
-      ...(fStar>0 ? [{type:"scatter", label:"½ Kelly", data:[{x:Math.round(fStar*0.5/1.2*120), y:gOf(fStar*0.5)}], backgroundColor:"#ff8c42", borderColor:"#ff8c42", pointRadius:4, showLine:false}] : []),
-      ...(fStar>0 ? [{type:"scatter", label:"¼ Kelly", data:[{x:Math.round(fStar*0.25/1.2*120), y:gOf(fStar*0.25)}], backgroundColor:"#52525b", borderColor:"#52525b", pointRadius:3, showLine:false}] : []),
-    ]},
-    options:{
-      responsive:true, maintainAspectRatio:false, interaction:{mode:"index",intersect:false},
-      plugins:{
-        legend:{display:false},
-        tooltip:{
-          backgroundColor:"rgba(0,0,0,.95)", titleColor:"#fafafa", bodyColor:"#a1a1aa", borderColor:"#27272a", borderWidth:1, padding:10, displayColors:true,
-          callbacks:{ title:function(items){ return "Bet "+items[0].label; }, label:function(c){ if(c.dataset.label && c.dataset.label.indexOf("Kelly")!==-1) return c.dataset.label+": "+(c.parsed.y!==null?(c.parsed.y*100).toFixed(3)+"%":"—"); return "Growth: "+(c.parsed.y!==null?(c.parsed.y>0?"+":"")+(c.parsed.y*100).toFixed(3)+"%":"—"); } }
-        }
-      },
-      scales:{
-        x:{grid:{color:"rgba(39,39,42,.5)"}, ticks:{maxTicksLimit:7, color:"#52525b", font:{size:10}}},
-        y:{grid:{color:"rgba(39,39,42,.5)"}, ticks:{color:"#52525b", callback:function(v){ return (v*100).toFixed(1)+"%"; }}, title:{display:true,text:"Expected log-growth / bet", color:"#52525b", font:{size:10}}}
-      }
-    }
-  });
-  document.getElementById("kellyChart").parentElement.style.height="280px";
-}
-function makeHistChart(canvasId, sorted, bankroll){
-  destroyChart(canvasId);
-  var lo=sorted[0], hi=sorted[sorted.length-1], bins=22, bw=(hi-lo)/bins;
-  if(!isFinite(bw) || bw===0){ bw=1; }
-  var counts=new Array(bins).fill(0), labels=[];
-  for(var i=0;i<bins;i++) labels.push(fmtMoney(lo+i*bw));
-  for(var i=0;i<sorted.length;i++){ var idx=Math.floor((sorted[i]-lo)/bw); if(idx>=bins) idx=bins-1; if(idx<0) idx=0; counts[idx]++; }
-  var buyIdx=-1; for(var i=0;i<bins;i++){ var l=lo+i*bw, r=l+bw; if(bankroll>=l && bankroll<r) buyIdx=i; }
-  var bg=counts.map(function(_,i){ return i===buyIdx ? "#ff5a33" : "#fafafa"; });
-  var ctx=document.getElementById(canvasId).getContext("2d");
-  charts[canvasId]=new Chart(ctx,{
-    type:"bar",
-    data:{labels:labels, datasets:[{label:"Count", data:counts, backgroundColor:bg, borderWidth:0}]},
-    options:{
-      responsive:true, maintainAspectRatio:false,
-      plugins:{
-        legend:{display:false},
-        tooltip:{
-          backgroundColor:"rgba(0,0,0,.95)", titleColor:"#fafafa", bodyColor:"#a1a1aa", borderColor:"#27272a", borderWidth:1,
-          callbacks:{ title:function(items){ var i=items[0].dataIndex; return fmtMoney(lo+i*bw)+" – "+fmtMoney(lo+(i+1)*bw)+(i===buyIdx?"  ◀ buy-in":""); }, label:function(c){ return "Count: "+c.parsed.y+"  ("+(c.parsed.y/sorted.length*100).toFixed(1)+"%)"; } }
-        }
-      },
-      scales:{
-        x:{grid:{display:false}, ticks:{maxTicksLimit:6, color:"#52525b", font:{size:10}}},
-        y:{grid:{color:"rgba(39,39,42,.5)"}, ticks:{color:"#52525b"}, title:{display:true,text:"Frequency", color:"#52525b", font:{size:10}}}
-      }
-    }
-  });
-  document.getElementById(canvasId).parentElement.style.height="260px";
-}
-function makeEquityChart(canvasId, paths){
-  destroyChart(canvasId);
-  if(!paths.length) return;
-  var maxLen=Math.max.apply(null, paths.map(function(p){return p.length;}));
-  var labels=[]; for(var i=0;i<maxLen;i++) labels.push(String(i));
-  var datasets=[];
-  for(var i=0;i<paths.length;i++){
-    var d=paths[i].slice(); while(d.length<maxLen) d.push(d[d.length-1]);
-    datasets.push({label:"Path "+(i+1), data:d, borderColor:"rgba(255,255,255,.07)", backgroundColor:"transparent", borderWidth:1, pointRadius:0, tension:.25});
-  }
-  var sorted=paths.slice().sort(function(a,b){return a[a.length-1]-b[b.length-1];});
-  var med=sorted[Math.floor(sorted.length/2)]; if(med){
-    var md=med.slice(); while(md.length<maxLen) md.push(md[md.length-1]);
-    datasets.push({label:"Median path", data:md, borderColor:"#fff", backgroundColor:"transparent", borderWidth:1.8, pointRadius:0, tension:.25});
-  }
-  var ctx=document.getElementById(canvasId).getContext("2d");
-  charts[canvasId]=new Chart(ctx,{
-    type:"line",
-    data:{labels:labels, datasets:datasets},
-    options:{
-      responsive:true, maintainAspectRatio:false,
-      interaction:{mode:"index",intersect:false},
-      plugins:{
-        legend:{display:false},
-        tooltip:{
-          backgroundColor:"rgba(0,0,0,.95)", titleColor:"#fafafa", bodyColor:"#a1a1aa", borderColor:"#27272a", borderWidth:1,
-          callbacks:{
-            title:function(items){ return "Bet #"+items[0].label; },
-            label:function(c){ if(c.dataset.label==="Median path") return "Median: "+fmtMoney(c.parsed.y); return null; },
-            filter:function(item){ return item.dataset.label==="Median path"; }
-          }
-        }
-      },
-      scales:{
-        x:{grid:{color:"rgba(39,39,42,.5)"}, ticks:{maxTicksLimit:6, color:"#52525b"}, title:{display:true,text:"Bet number", color:"#52525b", font:{size:10}}},
-        y:{grid:{color:"rgba(39,39,42,.5)"}, ticks:{color:"#52525b", callback:function(v){return fmtMoney(v);}}, title:{display:true,text:"Bankroll", color:"#52525b", font:{size:10}}}
-      }
-    }
-  });
-  document.getElementById(canvasId).parentElement.style.height="260px";
-}
-function makeLabChart(rows){
-  destroyChart("labChart");
-  var labels=rows.map(function(r){return r.frac.toFixed(2)+"×";});
-  var meds=rows.map(function(r){return r.r.median;});
-  var p5s=rows.map(function(r){return r.r.p5;});
-  var bestIdx=0, best=-Infinity; for(var i=0;i<rows.length;i++) if(rows[i].r.median>best){best=rows[i].r.median; bestIdx=i;}
-  var ctx=document.getElementById("labChart").getContext("2d");
-  charts.labChart=new Chart(ctx,{
-    type:"line",
-    data:{
-      labels:labels,
-      datasets:[
-        {label:"P5", data:p5s, borderColor:"rgba(255,255,255,0)", backgroundColor:"rgba(255,255,255,.06)", fill:"+1", pointRadius:0, tension:.3},
-        {label:"Median", data:meds, borderColor:"#fff", backgroundColor:"rgba(255,255,255,.05)", borderWidth:1.5, pointRadius:4, pointBackgroundColor:meds.map(function(_,i){return i===bestIdx?"#ff5a33":"#fff";}), pointBorderColor:"#000", pointBorderWidth:1.2, tension:.3, fill:false},
-      ]
-    },
-    options:{
-      responsive:true, maintainAspectRatio:false,
-      plugins:{
-        legend:{display:true, labels:{color:"#71717a", boxWidth:10, font:{size:11, family:"'NaN Mono'"}}},
-        tooltip:{
-          backgroundColor:"rgba(0,0,0,.95)", titleColor:"#fafafa", bodyColor:"#a1a1aa", borderColor:"#27272a", borderWidth:1,
-          callbacks:{ label:function(c){ return c.dataset.label+": "+fmtMoney(c.parsed.y); } }
-        }
-      },
-      scales:{
-        x:{grid:{color:"rgba(39,39,42,.5)"}, ticks:{color:"#52525b"}, title:{display:true,text:"Kelly fraction", color:"#52525b"}},
-        y:{grid:{color:"rgba(39,39,42,.5)"}, ticks:{color:"#52525b", callback:function(v){return fmtMoney(v);}}, title:{display:true,text:"Bankroll", color:"#52525b"}}
-      }
-    }
-  });
-  document.getElementById("labChart").parentElement.style.height="320px";
-}
-function makeRiskChart(q){
-  destroyChart("riskChart");
-  var labels=[], data=[]; for(var n=1;n<=20;n++){ labels.push(String(n)); data.push(Math.pow(q,n)); }
-  var ctx=document.getElementById("riskChart").getContext("2d");
-  charts.riskChart=new Chart(ctx,{
-    type:"line",
-    data:{labels:labels, datasets:[{label:"P(streak)", data:data, borderColor:"#ff5a33", backgroundColor:"rgba(255,90,51,.08)", borderWidth:1.5, pointRadius:0, tension:.3, fill:true}]},
-    options:{
-      responsive:true, maintainAspectRatio:false,
-      plugins:{
-        legend:{display:false},
-        tooltip:{backgroundColor:"rgba(0,0,0,.95)", titleColor:"#fafafa", bodyColor:"#a1a1aa", borderColor:"#27272a", borderWidth:1, callbacks:{ title:function(items){return "Streak length: "+items[0].label;}, label:function(c){return "P = "+(c.parsed.y*100).toExponential(2)+"%  (1 in "+(1/c.parsed.y).toLocaleString()+")"; } }}
-      },
-      scales:{
-        x:{grid:{color:"rgba(39,39,42,.5)"}, ticks:{color:"#52525b"}, title:{display:true,text:"Streak length", color:"#52525b"}},
-        y:{type:"logarithmic", grid:{color:"rgba(39,39,42,.5)"}, ticks:{color:"#52525b", callback:function(v){ var s=v.toExponential(0); return s; }}, title:{display:true,text:"Probability (log)", color:"#52525b"}}
-      }
-    }
-  });
-  document.getElementById("riskChart").parentElement.style.height="220px";
-}
-
-// ── Tabs — underline brutalist ──
-var active="kelly";
-var TAB_LABELS={kelly:'Kelly',monte:'Monte Carlo',lab:'Lab',parlay:'Parlay',risk:'Risk'};
-function showTab(tab){
-  if(!TAB_LABELS[tab]) return;
-  active=tab;
-  document.querySelectorAll(".tab").forEach(function(b){
-    var ownTab=b.getAttribute("data-tab");
-    var is=ownTab===tab;
-    b.className=is
-      ? "tab active shrink-0 text-[11px] font-semibold tracking-[0.18em] uppercase py-4 border-b-2 border-[#ff5a33] text-white transition"
-      : "tab shrink-0 text-[11px] font-semibold tracking-[0.18em] uppercase py-4 border-b-2 border-transparent text-zinc-500 hover:text-zinc-200 transition";
-  });
-  document.querySelectorAll(".view").forEach(function(v){ v.classList.toggle("hidden", v.id!=="view-"+tab); v.classList.toggle("active", v.id==="view-"+tab); });
-  document.querySelectorAll(".left-panels>div").forEach(function(p){ p.classList.toggle("hidden", p.getAttribute("data-panel")!==tab); p.classList.toggle("active", p.getAttribute("data-panel")===tab); });
-  document.getElementById("leftTitle").textContent=TAB_LABELS[tab];
-  if(tab==="kelly") updateKelly();
-  if(tab==="risk") updateRisk();
-  if(tab==="monte") updateMonteHint();
-  if(tab==="parlay") updateParlay();
-  saveLS("gt.active", tab);
-  setTimeout(function(){ Object.keys(charts).forEach(function(k){ try{ charts[k].resize(); }catch(e){} }); }, 60);
-}
-document.querySelectorAll(".tab").forEach(function(btn){ btn.addEventListener("click", function(){ showTab(btn.getAttribute("data-tab")); }); });
-document.addEventListener("keydown", function(e){
-  if(e.target.tagName==="INPUT") return;
-  if(e.key>="1" && e.key<="5"){ var tabs=["kelly","monte","lab","parlay","risk"]; showTab(tabs[parseInt(e.key,10)-1]); }
-});
-
-// ── Kelly ──
-function updateKelly(){
-  var p,dec, hasErr=false;
-  try{ p=parseProb(document.getElementById("k-p").value); setErr("k-p-err",""); }catch(e){ setErr("k-p-err", e.message); hasErr=true; }
-  try{ dec=oddsToDecimal(document.getElementById("k-odds").value); setErr("k-odds-err",""); }catch(e){ setErr("k-odds-err", e.message); hasErr=true; }
-  var brEl=document.getElementById("k-br");
-  var br; try{ br=parseBankroll(brEl.value); setErr("k-br-err",""); }catch(e){ setErr("k-br-err", e.message); hasErr=true; br=1000; }
-  var tag=document.getElementById("kellyTag");
-  if(hasErr){ tag.textContent="INVALID"; tag.className="mono text-[10px] font-semibold tracking-[0.06em] px-2 py-1 border border-red-900 bg-red-950/40 text-red-400"; return; }
-  var s=kellyStats(p,dec), f=s.f, isGood=f>0;
-  tag.textContent=isGood?"EDGE ✓":"NO EDGE ✘";
-  tag.className="mono text-[10px] font-semibold tracking-[0.06em] px-2 py-1 border "+(isGood?"border-[#ff5a33]/30 bg-[#ff5a33]/10 text-[#ff5a33]":"border-red-900 bg-red-950/30 text-red-400");
-  var kvs=document.getElementById("kellyKVs");
-  kvs.innerHTML=''
-    +'<div class="border border-zinc-800 p-3"><div class="mono text-[10px] font-semibold tracking-[0.12em] uppercase text-zinc-500">Implied prob</div><div class="mono text-[15px] font-bold text-white mt-1">'+(s.implied*100).toFixed(2)+'%</div><div class="mono text-[11px] text-zinc-500">from '+dec.toFixed(2)+'×</div></div>'
-    +'<div class="border border-zinc-800 p-3"><div class="mono text-[10px] font-semibold tracking-[0.12em] uppercase text-zinc-500">Your edge</div><div class="mono text-[15px] font-bold '+(s.edge>0?'text-[#ff5a33]':s.edge<0?'text-red-400':'text-white')+' mt-1">'+(s.edge*100).toFixed(2)+' pp</div><div class="mono text-[11px] text-zinc-500">prob − implied</div></div>'
-    +'<div class="border border-zinc-800 p-3"><div class="mono text-[10px] font-semibold tracking-[0.12em] uppercase text-zinc-500">EV / $1</div><div class="mono text-[15px] font-bold '+(s.ev>0?'text-[#ff5a33]':'text-red-400')+' mt-1">'+(s.ev>0?'+':'')+s.ev.toFixed(4)+'</div><div class="mono text-[11px] text-zinc-500">per unit staked</div></div>'
-    +'<div class="border '+(isGood?'border-[#ff5a33]/30 bg-[#ff5a33]/[0.06]':'border-red-900 bg-red-950/20')+' p-3"><div class="mono text-[10px] font-semibold tracking-[0.12em] uppercase text-zinc-500">Kelly f*</div><div class="mono text-[15px] font-bold '+(isGood?'text-[#ff5a33]':'text-red-400')+' mt-1">'+(f*100).toFixed(2)+'%</div><div class="mono text-[11px] text-zinc-500">'+(isGood?'full Kelly':'don’t bet')+'</div></div>';
-  var call=document.getElementById("kellyCallout");
-  if(!isGood){ call.className="flex gap-3 items-start border border-red-900 bg-red-950/20 px-3 py-3 mono text-[12px] leading-relaxed text-red-200"; call.innerHTML='<span class="shrink-0 w-6 h-6 grid place-items-center border border-red-900 mono text-xs">✘</span><span>No edge — Kelly 0. Don’t bet at these odds. Improve prob or find better price.</span>'; }
-  else if(f>0.25){ call.className="flex gap-3 items-start border border-amber-900 bg-amber-950/20 px-3 py-3 mono text-[12px] leading-relaxed text-amber-200"; call.innerHTML='<span class="shrink-0 w-6 h-6 grid place-items-center border border-amber-900 mono text-xs">⚠</span><span>Large Kelly (>25%). Variance will be brutal — use half or quarter. Half keeps ~75% growth with ~½ swings.</span>'; }
-  else if(f>0.1){ call.className="flex gap-3 items-start border border-zinc-800 px-3 py-3 mono text-[12px] leading-relaxed text-zinc-300"; call.innerHTML='<span class="shrink-0 w-6 h-6 grid place-items-center border border-zinc-800 mono text-xs">◈</span><span>Good edge. Half Kelly halves swings while keeping ~75% of max growth — recommended.</span>'; }
-  else { call.className="flex gap-3 items-start border border-[#ff5a33]/20 bg-[#ff5a33]/[0.06] px-3 py-3 mono text-[12px] leading-relaxed text-zinc-100"; call.innerHTML='<span class="shrink-0 w-6 h-6 grid place-items-center bg-[#ff5a33] text-black mono text-xs font-bold">✓</span><span>Nice — modest Kelly. Half Kelly is the sweet spot for most bettors.</span>'; }
-  var table=document.getElementById("kellyTable");
-  var rows=[[1,"Full"],[0.5,"Half"],[0.33,"Third"],[0.25,"Quarter"]];
-  var html='<thead><tr><th class="text-left px-3 py-2 mono text-[10px] font-semibold tracking-[0.08em] uppercase text-zinc-500 border-b border-zinc-800">Fraction</th><th class="text-left px-3 py-2 mono text-[10px] font-semibold tracking-[0.08em] uppercase text-zinc-500 border-b border-zinc-800">Bet %</th><th class="text-left px-3 py-2 mono text-[10px] font-semibold tracking-[0.08em] uppercase text-zinc-500 border-b border-zinc-800">Growth / bet</th><th class="px-3 py-2 border-b border-zinc-800"></th></tr></thead><tbody>';
-  for(var i=0;i<rows.length;i++){ var frac=rows[i][0],label=rows[i][1],ff=Math.min(f,1)*frac, gg=ff<1&&ff>0? p*Math.log(1+ff*s.b)+(1-p)*Math.log(1-ff):-Infinity, badge=frac===0.5?'<span class="ml-2 mono text-[10px] px-1.5 py-0.5 bg-[#ff5a33] text-black font-bold">recommended</span>':''; html+='<tr class="border-b border-zinc-800 hover:bg-white/[0.02]"><td class="px-3 py-2.5 mono text-zinc-200">'+label+badge+'</td><td class="px-3 py-2.5 mono font-bold text-white">'+(ff*100).toFixed(2)+'%</td><td class="px-3 py-2.5 mono '+(gg>0?'text-[#ff5a33]':'text-zinc-500')+'">'+(isFinite(gg)?(gg>0?'+':'')+(gg*100).toFixed(3)+'%':'—')+'</td><td class="px-3 py-2.5 mono text-zinc-500">'+frac+'×</td></tr>'; }
-  html+='</tbody>'; table.innerHTML=html;
-  var full=Math.min(f,1)*br, half=full*0.5, quart=full*0.25;
-  document.getElementById("stakeKVs").innerHTML=''
-    +'<div class="border border-zinc-800 p-3"><div class="mono text-[10px] font-semibold tracking-[0.12em] uppercase text-zinc-500">Full Kelly</div><div class="mono text-[15px] font-bold text-white mt-1">'+fmtMoney(full)+'</div><div class="mono text-[11px] text-zinc-500">'+(Math.min(f,1)*100).toFixed(2)+'% of '+fmtMoney(br)+'</div></div>'
-    +'<div class="border border-[#ff5a33]/20 bg-[#ff5a33]/[0.04] p-3"><div class="mono text-[10px] font-semibold tracking-[0.12em] uppercase text-zinc-500">Half Kelly</div><div class="mono text-[15px] font-bold text-[#ff5a33] mt-1">'+fmtMoney(half)+'</div><div class="mono text-[11px] text-zinc-500">'+(Math.min(f,1)*50).toFixed(2)+'% — recommended</div></div>'
-    +'<div class="border border-zinc-800 p-3"><div class="mono text-[10px] font-semibold tracking-[0.12em] uppercase text-zinc-500">Quarter</div><div class="mono text-[15px] font-bold text-white mt-1">'+fmtMoney(quart)+'</div><div class="mono text-[11px] text-zinc-500">lowest variance</div></div>'
-    +'<div class="border border-zinc-800 p-3"><div class="mono text-[10px] font-semibold tracking-[0.12em] uppercase text-zinc-500">Double time</div><div class="mono text-[15px] font-bold text-white mt-1">'+(isGood&&s.g>0?s.dbl.toFixed(0)+' bets':'—')+'</div><div class="mono text-[11px] text-zinc-500">median at full Kelly</div></div>';
-  document.getElementById("kellyNote").textContent=isGood&&s.g>0? 'Half Kelly doubling ~'+(s.dbl*2).toFixed(0)+' bets median — slower but far smoother.':'';
-  makeKellyChart(p,dec,f);
-  saveLS("gt.kelly", {p:document.getElementById("k-p").value, odds:document.getElementById("k-odds").value, br:br});
-}
-function bindKelly(){
-  var kp=document.getElementById("k-p"), kp2=document.getElementById("k-p2");
-  kp.addEventListener("keydown", function(e){ if(e.key==="%" || e.key==="." ) return; blockLetters(e); });
-  document.getElementById("k-odds").addEventListener("keydown", blockLetters);
-  function onKp(){ try{var v=parseProb(kp.value); kp2.value=Math.round(v*100);}catch(e){} updateKelly(); }
-  kp.addEventListener("input", onKp); kp2.addEventListener("input", function(){ kp.value=this.value+"%"; updateKelly(); });
-  document.getElementById("k-odds").addEventListener("input", updateKelly);
-  document.getElementById("k-br").addEventListener("input", updateKelly);
-  document.getElementById("k-br").addEventListener("keydown", function(e){ if(e.key==="-"||e.key==="e"||e.key==="E") e.preventDefault(); });
-  document.querySelectorAll("[data-kp]").forEach(function(b){ b.addEventListener("click", function(){ kp.value=b.getAttribute("data-kp"); onKp(); }); });
-  document.querySelectorAll("[data-ko]").forEach(function(b){ b.addEventListener("click", function(){ document.getElementById("k-odds").value=b.getAttribute("data-ko"); updateKelly(); }); });
-}
-
-// ── Monte ──
-function getKellyForMonte(){ try{var p=parseProb(document.getElementById("m-p").value), dec=oddsToDecimal(document.getElementById("m-odds").value); return kellyStats(p,dec);}catch(e){return null;}}
-function updateMonteHint(){
-  var el=document.getElementById("m-kellyHint"); if(!el) return;
-  var s=getKellyForMonte(); if(!s){ el.textContent=""; return; }
-  var hasPErr=false, hasOErr=false;
-  try{ parseProb(document.getElementById("m-p").value); setErr("m-p-err",""); }catch(e){ setErr("m-p-err", e.message); hasPErr=true; }
-  try{ oddsToDecimal(document.getElementById("m-odds").value); setErr("m-odds-err",""); }catch(e){ setErr("m-odds-err", e.message); hasOErr=true; }
-  if(hasPErr||hasOErr) { el.textContent=""; return; }
-  if(s.f<=0) el.innerHTML='<span class="text-amber-400 mono">Kelly f* = 0% — no edge at '+Math.floor(s.implied*100)+'% implied.</span> Try improving prob or odds.';
-  else el.innerHTML='Kelly f* = <b class="text-white mono">'+(s.f*100).toFixed(2)+'%</b> · Half <b class="text-white mono">'+(s.f*50).toFixed(2)+'%</b> · EV '+(s.ev>0?'+':'')+s.ev.toFixed(3)+' <span class="text-zinc-500 mono">— leave Bet size empty for half Kelly</span>';
-  if(!document.getElementById("m-bet").value && s.f>0) document.getElementById("m-bet").placeholder=(s.f*50).toFixed(2)+'% (half Kelly)';
-}
-function runMonte(){
-  var p,dec;
-  try{ p=parseProb(document.getElementById("m-p").value); setErr("m-p-err",""); }catch(e){ setErr("m-p-err", e.message); toast(e.message); return; }
-  try{ dec=oddsToDecimal(document.getElementById("m-odds").value); setErr("m-odds-err",""); }catch(e){ setErr("m-odds-err", e.message); toast(e.message); return; }
-  var br; try{ br=parseBankroll(document.getElementById("m-br").value); setErr("m-br-err",""); }catch(e){ setErr("m-br-err", e.message); toast(e.message); return; }
-  var nBets, nSims;
-  try{ nBets=parseIntStrict(document.getElementById("m-bets"), "Bets", 1, 5000); setErr("m-bets-err",""); }catch(e){ setErr("m-bets-err", e.message); toast(e.message); return; }
-  try{ nSims=parseIntStrict(document.getElementById("m-sims"), "Sims", 100, 50000); setErr("m-sims-err",""); }catch(e){ setErr("m-sims-err", e.message); toast(e.message); return; }
-  var f; try{ f=parseBetPct(document.getElementById("m-bet").value, (function(){var s=getKellyForMonte(); return s&&s.f>0? s.f*0.5:0.02;})()); setErr("m-bet-err",""); }catch(e){ setErr("m-bet-err", e.message); toast(e.message); return; }
-  if(!(f>0&&f<1)){ setErr("m-bet-err","Bet size must be 0–100%"); toast("Bet size must be 0–100%"); return; }
-  var btn=document.getElementById("m-run"); var old=btn.innerHTML; btn.innerHTML='<span class="inline-block w-4 h-4 border-2 border-black/20 border-t-black mono animate-spin"></span> Running…'; btn.disabled=true; btn.classList.add("opacity-60");
-  setTimeout(function(){
-    var t0=performance.now(), r=monteCarlo(br,p,dec,f,nBets,nSims), dt=((performance.now()-t0)/1000).toFixed(2);
-    document.getElementById("monteSub").textContent=nSims.toLocaleString()+' sims × '+nBets+' bets · '+(f*100).toFixed(2)+'% · '+dt+'s';
-    document.getElementById("monteTag").textContent=r.ruined>0.05?"Risky": r.ruined>0.01?"OK":"Healthy";
-    document.getElementById("monteTag").className="ml-auto mono text-[10px] font-semibold tracking-[0.06em] px-2 py-1 border "+(r.ruined>0.05?"border-red-900 bg-red-950/30 text-red-300": r.ruined>0.01?"border-amber-900 bg-amber-950/20 text-amber-300":"border-[#ff5a33]/30 bg-[#ff5a33]/10 text-[#ff5a33]");
-    document.getElementById("monteEmpty").classList.add("hidden"); document.getElementById("monteResults").classList.remove("hidden");
-    document.getElementById("monteKVs").innerHTML=''
-      +'<div class="border border-zinc-800 p-3"><div class="mono text-[10px] font-semibold tracking-[0.12em] uppercase text-zinc-500">Mean</div><div class="mono text-[15px] font-bold text-white mt-1">'+fmtMoney(r.mean)+'</div><div class="mono text-[11px] text-zinc-500">avg final</div></div>'
-      +'<div class="border border-[#ff5a33]/20 bg-[#ff5a33]/[0.04] p-3"><div class="mono text-[10px] font-semibold tracking-[0.12em] uppercase text-zinc-500">Median</div><div class="mono text-[15px] font-bold text-[#ff5a33] mt-1">'+fmtMoney(r.median)+'</div><div class="mono text-[11px] text-zinc-500">P50</div></div>'
-      +'<div class="border border-zinc-800 p-3"><div class="mono text-[10px] font-semibold tracking-[0.12em] uppercase text-zinc-500">P5 — P95</div><div class="mono text-[13px] font-bold text-white mt-1">'+fmtMoney(r.p5)+' → '+fmtMoney(r.p95)+'</div><div class="mono text-[11px] text-zinc-500">90% interval</div></div>'
-      +'<div class="border border-zinc-800 p-3"><div class="mono text-[10px] font-semibold tracking-[0.12em] uppercase text-zinc-500">P10 — P90</div><div class="mono text-[13px] font-bold text-white mt-1">'+fmtMoney(r.p10)+' → '+fmtMoney(r.p90)+'</div><div class="mono text-[11px] text-zinc-500">80% interval</div></div>'
-      +'<div class="border '+(r.profit>.55?'border-[#ff5a33]/20 bg-[#ff5a33]/[0.04]':'border-zinc-800')+' p-3"><div class="mono text-[10px] font-semibold tracking-[0.12em] uppercase text-zinc-500">Profit rate</div><div class="mono text-[15px] font-bold text-[#ff5a33] mt-1">'+(r.profit*100).toFixed(1)+'%</div><div class="mono text-[11px] text-zinc-500">final > start</div></div>'
-      +'<div class="border '+(r.ruined>0.02?'border-red-900 bg-red-950/20':'border-zinc-800')+' p-3"><div class="mono text-[10px] font-semibold tracking-[0.12em] uppercase text-zinc-500">Ruin / bust</div><div class="mono text-[15px] font-bold '+(r.ruined>0.02?'text-red-400':'text-white')+' mt-1">'+(r.ruined*100).toFixed(1)+'% / '+(r.bust*100).toFixed(1)+'%</div><div class="mono text-[11px] text-zinc-500">&lt;$1 / −90%</div></div>'
-      +'<div class="border border-zinc-800 p-3"><div class="mono text-[10px] font-semibold tracking-[0.12em] uppercase text-zinc-500">Best / worst</div><div class="mono text-[13px] font-bold text-white mt-1">'+fmtMoney(r.hi)+' / <span class="text-red-400">'+fmtMoney(r.lo)+'</span></div><div class="mono text-[11px] text-zinc-500">range</div></div>'
-      +'<div class="border border-zinc-800 p-3"><div class="mono text-[10px] font-semibold tracking-[0.12em] uppercase text-zinc-500">Median ROI</div><div class="mono text-[15px] font-bold '+(r.median>br?'text-[#ff5a33]':'text-red-400')+' mt-1">'+((r.median/br-1)*100).toFixed(1)+'%</div><div class="mono text-[11px] text-zinc-500">mean '+((r.mean/br-1)*100).toFixed(1)+'%</div></div>';
-    makeHistChart("histChart", r.finals, br);
-    makeEquityChart("equityChart", r.paths);
-    document.getElementById("footStats").textContent='monte '+nSims.toLocaleString()+'×'+nBets+' in '+dt+'s · median '+fmtMoney(r.median);
-    btn.innerHTML=old; btn.disabled=false; btn.classList.remove("opacity-60");
-    toast("Simulation done — median "+fmtMoney(r.median), true);
-  }, 40);
-}
-function bindMonte(){
-  ["m-p","m-odds","m-bet","m-br","m-bets","m-sims"].forEach(function(id){
-    var el=document.getElementById(id); if(!el) return;
-    el.addEventListener("input", updateMonteHint);
-  });
-  document.getElementById("m-run").addEventListener("click", runMonte);
-  document.getElementById("m-half").addEventListener("click", function(){var s=getKellyForMonte(); if(s&&s.f>0){document.getElementById("m-bet").value=(s.f*50).toFixed(2)+"%"; updateMonteHint(); toast("Half Kelly: "+(s.f*50).toFixed(2)+"%", true);}});
-  document.getElementById("m-quarter").addEventListener("click", function(){var s=getKellyForMonte(); if(s&&s.f>0){document.getElementById("m-bet").value=(s.f*25).toFixed(2)+"%"; updateMonteHint();}});
-}
-
-// ── Lab ──
-function runLab(){
-  var p,dec;
-  try{ p=parseProb(document.getElementById("l-p").value); setErr("l-p-err",""); }catch(e){ setErr("l-p-err", e.message); toast(e.message); return; }
-  try{ dec=oddsToDecimal(document.getElementById("l-odds").value); setErr("l-odds-err",""); }catch(e){ setErr("l-odds-err", e.message); toast(e.message); return; }
-  var br; try{ br=parseBankroll(document.getElementById("l-br").value); setErr("l-br-err",""); }catch(e){ setErr("l-br-err", e.message); toast(e.message); return; }
-  var nBets, nSims;
-  try{ nBets=parseIntStrict(document.getElementById("l-bets"), "Bets / sim", 10, 5000); }catch(e){ toast(e.message); return; }
-  try{ nSims=parseIntStrict(document.getElementById("l-sims"), "Sims / frac", 200, 50000); }catch(e){ toast(e.message); return; }
-  var s=kellyStats(p,dec), fStar=Math.max(0,s.f); if(fStar<=0){toast("No edge — f* is 0. Need positive EV."); return;}
-  var btn=document.getElementById("l-run"); var old=btn.innerHTML; btn.innerHTML='<span class="inline-block w-4 h-4 border-2 border-black/20 border-t-black mono animate-spin"></span> Sweeping…'; btn.disabled=true; document.getElementById("labTag").textContent="Running"; document.getElementById("labTag").className="ml-auto mono text-[10px] font-semibold tracking-[0.06em] px-2 py-1 border border-amber-900 bg-amber-950/20 text-amber-300";
-  document.getElementById("labEmpty").classList.add("hidden"); document.getElementById("labResults").classList.remove("hidden");
-  setTimeout(function(){
-    var fracs=[0.25,0.5,0.75,1.0,1.5], rows=[];
-    for(var i=0;i<fracs.length;i++){var frac=fracs[i], f=frac*fStar; if(f>=0.99) f=0.99; var r=monteCarlo(br,p,dec,f,nBets,nSims); rows.push({frac:frac,f:f,r:r});}
-    var table=document.getElementById("labTable"), html='<thead><tr><th class="text-left px-3 py-2 mono text-[10px] font-semibold tracking-[0.06em] uppercase text-zinc-500 border-b border-zinc-800">Frac</th><th class="text-left px-3 py-2 mono text-[10px] font-semibold tracking-[0.06em] uppercase text-zinc-500 border-b border-zinc-800">Bet %</th><th class="text-left px-3 py-2 mono text-[10px] font-semibold tracking-[0.06em] uppercase text-zinc-500 border-b border-zinc-800">Median</th><th class="text-left px-3 py-2 mono text-[10px] font-semibold tracking-[0.06em] uppercase text-zinc-500 border-b border-zinc-800">Mean</th><th class="text-left px-3 py-2 mono text-[10px] font-semibold tracking-[0.06em] uppercase text-zinc-500 border-b border-zinc-800">P5</th><th class="text-left px-3 py-2 mono text-[10px] font-semibold tracking-[0.06em] uppercase text-zinc-500 border-b border-zinc-800">Ruin</th><th class="text-left px-3 py-2 mono text-[10px] font-semibold tracking-[0.06em] uppercase text-zinc-500 border-b border-zinc-800">Profit</th><th class="px-3 py-2 border-b border-zinc-800"></th></tr></thead><tbody>';
-    var best=-Infinity,bestFrac=null; for(var i=0;i<rows.length;i++) if(rows[i].r.median>best){best=rows[i].r.median; bestFrac=rows[i].frac;}
-    for(var i=0;i<rows.length;i++){var row=rows[i], isBest=row.frac===bestFrac, ruin=row.r.ruined*100, badge=isBest?'<span class="mono text-[10px] px-1.5 py-0.5 bg-[#ff5a33] text-black font-bold">best median</span>':row.frac===0.5?'<span class="mono text-[10px] px-1.5 py-0.5 border border-zinc-800 text-zinc-500">half</span>':row.frac===1?'<span class="mono text-[10px] px-1.5 py-0.5 border border-amber-900 bg-amber-950/20 text-amber-300">full</span>':''; html+='<tr class="'+(isBest?'bg-[#ff5a33]/[0.04]':'hover:bg-white/[0.02]')+' border-b border-zinc-800"><td class="px-3 py-2.5 mono font-bold text-white">'+row.frac.toFixed(2)+'×</td><td class="px-3 py-2.5 mono text-white">'+(row.f*100).toFixed(2)+'%</td><td class="px-3 py-2.5 mono font-bold text-white">'+fmtMoney(row.r.median)+'</td><td class="px-3 py-2.5 mono text-zinc-400">'+fmtMoney(row.r.mean)+'</td><td class="px-3 py-2.5 mono text-zinc-400">'+fmtMoney(row.r.p5)+'</td><td class="px-3 py-2.5 mono" style="color:'+(ruin>5?'#ef4444':ruin>1?'#ff5a33':'#fafafa')+'">'+ruin.toFixed(1)+'%</td><td class="px-3 py-2.5 mono text-zinc-400">'+(row.r.profit*100).toFixed(1)+'%</td><td class="px-3 py-2.5">'+badge+'</td></tr>';}
-    html+='</tbody>'; table.innerHTML=html;
-    makeLabChart(rows);
-    btn.innerHTML=old; btn.disabled=false; document.getElementById("labTag").textContent="Done"; document.getElementById("labTag").className="ml-auto mono text-[10px] font-semibold tracking-[0.06em] px-2 py-1 border bg-white text-black font-bold";
-    toast("Sweep done — best "+bestFrac.toFixed(2)+"×", true);
-  }, 40);
-}
-function bindLab(){
-  document.getElementById("l-run").addEventListener("click", runLab);
-  ["l-p","l-odds"].forEach(function(id){
-    var el=document.getElementById(id); if(!el) return;
-    el.addEventListener("input", function(){
-      try{ parseProb(document.getElementById("l-p").value); setErr("l-p-err",""); }catch(e){ setErr("l-p-err", e.message); }
-      try{ oddsToDecimal(document.getElementById("l-odds").value); setErr("l-odds-err",""); }catch(e){ setErr("l-odds-err", e.message); }
-    });
-    el.addEventListener("keydown", blockLetters);
-  });
-  document.getElementById("l-br").addEventListener("keydown", function(e){ if(e.key==="-"||e.key==="e"||e.key==="E") e.preventDefault(); });
-}
-
-// ── Parlay ──
-var parlayLegs = loadLS("gt.parlayLegs", [{p:"60%",dec:"1.91"},{p:"55%",dec:"2.10"}]);
-function saveParlay(){ saveLS("gt.parlayLegs", parlayLegs); }
-function renderParlayLegs(){
-  var wrap=document.getElementById("parlay-legs"); wrap.innerHTML="";
-  for(var i=0;i<parlayLegs.length;i++){
-    (function(idx){
-      var leg=parlayLegs[idx];
-      var d=document.createElement("div"); d.className="border border-zinc-800 p-3 grid grid-cols-2 gap-3";
-      d.innerHTML='<div class="col-span-2 flex items-center gap-2 mono text-[10px] font-semibold tracking-[0.08em] uppercase text-zinc-500"><span>Leg '+(idx+1)+'</span><button class="x ml-auto w-6 h-6 border border-zinc-800 grid place-items-center hover:border-red-900 hover:text-red-400">✕</button></div>'
-        +'<div><label class="mono text-[10px] font-semibold tracking-[0.08em] uppercase text-zinc-500">Prob</label><input class="leg-p mt-1 w-full bg-transparent border border-zinc-800 px-3 py-2 mono text-white text-[13px]" value="'+leg.p.replace(/"/g,'&quot;')+'" placeholder="55%"></div>'
-        +'<div><label class="mono text-[10px] font-semibold tracking-[0.08em] uppercase text-zinc-500">Odds</label><input class="leg-o mt-1 w-full bg-transparent border border-zinc-800 px-3 py-2 mono text-white text-[13px]" value="'+leg.dec.replace(/"/g,'&quot;')+'" placeholder="1.91"></div>';
-      var rm=d.querySelector(".x"); rm.addEventListener("click", function(){ if(parlayLegs.length<=1){ toast("Keep at least 1 leg"); return; } parlayLegs.splice(idx,1); saveParlay(); renderParlayLegs(); updateParlay(); });
-      var pIn=d.querySelector(".leg-p"), oIn=d.querySelector(".leg-o");
-      pIn.addEventListener("keydown", blockLetters); oIn.addEventListener("keydown", blockLetters);
-      pIn.addEventListener("input", function(){ parlayLegs[idx].p=this.value; saveParlay(); updateParlay(); });
-      oIn.addEventListener("input", function(){ parlayLegs[idx].dec=this.value; saveParlay(); updateParlay(); });
-      wrap.appendChild(d);
-    })(i);
-  }
-}
-function updateParlay(){
-  var tag=document.getElementById("parlayTag"), call=document.getElementById("parlayCallout");
-  var hint=document.getElementById("parlay-hint"), empty=document.getElementById("parlayEmpty");
-  var legs=[], ok=true, firstErr="";
-  for(var i=0;i<parlayLegs.length;i++){
-    try{ var p=parseProb(parlayLegs[i].p), dec=oddsToDecimal(parlayLegs[i].dec); legs.push({p:p,dec:dec}); }
-    catch(e){ ok=false; if(!firstErr) firstErr="Leg "+(i+1)+": "+e.message; }
-  }
-  if(legs.length<2){ tag.textContent="Need 2+ legs"; tag.className="ml-auto mono text-[10px] font-semibold tracking-[0.06em] uppercase px-2 py-1 border border-zinc-800 text-zinc-500"; }
-  if(!ok || legs.length<2){
-    document.getElementById("parlayKVs").innerHTML="";
-    document.getElementById("parlayTable").innerHTML="";
-    document.getElementById("parlayStakeKVs").innerHTML="";
-    hint.textContent= legs.length<2? "Add at least 2 legs to see combined Kelly." : firstErr;
-    hint.className="mono text-[11px] "+(ok?"text-zinc-500":"text-red-400");
-    empty.classList.remove("hidden"); document.getElementById("parlayMonteSection").classList.add("hidden");
-    if(legs.length>=2 && !ok){ call.className="flex gap-3 items-start border border-red-900 bg-red-950/20 px-3 py-3 mono text-[12px] leading-relaxed text-red-200"; call.innerHTML='<span class="shrink-0 w-6 h-6 grid place-items-center border border-red-900 mono text-xs">✘</span><span>'+firstErr+'</span>'; }
-    return;
-  }
-  hint.className="mono text-[11px] text-zinc-500";
-  var comb=parlayCombined(legs), pc=comb.p, dc=comb.dec, s=kellyStats(pc,dc), f=s.f;
-  var isGood=f>0;
-  tag.textContent= isGood? "Edge ✓" : "No edge ✘"; tag.className="ml-auto mono text-[10px] font-semibold tracking-[0.06em] uppercase px-2 py-1 border "+(isGood?"border-[#ff5a33]/30 bg-[#ff5a33]/10 text-[#ff5a33]":"border-red-900 bg-red-950/20 text-red-400");
-  hint.textContent=legs.length+" legs · p "+(pc*100).toFixed(3)+"% · dec "+dc.toFixed(3)+"×";
-  empty.classList.add("hidden");
-  if(!isGood){ call.className="flex gap-3 items-start border border-red-900 bg-red-950/20 px-3 py-3 mono text-[12px] leading-relaxed text-red-200"; call.innerHTML='<span class="shrink-0 w-6 h-6 grid place-items-center border border-red-900 mono text-xs">✘</span><span>No edge on parlay (EV '+(s.ev>0?'+':'')+s.ev.toFixed(4)+'). Singles may still have edge — check each leg. Parlay variance hurts.</span>'; }
-  else if(pc<0.15){ call.className="flex gap-3 items-start border border-amber-900 bg-amber-950/20 px-3 py-3 mono text-[12px] leading-relaxed text-amber-200"; call.innerHTML='<span class="shrink-0 w-6 h-6 grid place-items-center border border-amber-900 mono text-xs">⚠</span><span>Parlay p very low ('+(pc*100).toFixed(1)+'%): Kelly tiny, variance huge. Half/quarter Kelly strongly recommended.</span>'; }
-  else if(f>0.12){ call.className="flex gap-3 items-start border border-zinc-800 px-3 py-3 mono text-[12px] leading-relaxed text-zinc-300"; call.innerHTML='<span class="shrink-0 w-6 h-6 grid place-items-center border border-zinc-800 mono text-xs">◈</span><span>Parlay has edge but Kelly '+(f*100).toFixed(2)+'% is still large for an accumulator. Use half Kelly.</span>'; }
-  else { call.className="flex gap-3 items-start border border-[#ff5a33]/20 bg-[#ff5a33]/[0.06] px-3 py-3 mono text-[12px] leading-relaxed text-zinc-100"; call.innerHTML='<span class="shrink-0 w-6 h-6 grid place-items-center bg-[#ff5a33] text-black mono text-xs font-bold">✓</span><span>Parlay has edge. Combined f* '+(f*100).toFixed(2)+'%. Size down — parlays concentrate variance.</span>'; }
-  var kvs=document.getElementById("parlayKVs");
-  kvs.innerHTML=''
-    +'<div class="border border-zinc-800 p-3"><div class="mono text-[10px] font-semibold tracking-[0.12em] uppercase text-zinc-500">Combined p</div><div class="mono text-[15px] font-bold text-white mt-1">'+(pc*100).toFixed(3)+'%</div><div class="mono text-[11px] text-zinc-500">'+legs.length+' legs</div></div>'
-    +'<div class="border border-zinc-800 p-3"><div class="mono text-[10px] font-semibold tracking-[0.12em] uppercase text-zinc-500">Combined dec</div><div class="mono text-[15px] font-bold text-white mt-1">'+dc.toFixed(3)+'×</div><div class="mono text-[11px] text-zinc-500">b '+(dc-1).toFixed(3)+'</div></div>'
-    +'<div class="border border-zinc-800 p-3"><div class="mono text-[10px] font-semibold tracking-[0.12em] uppercase text-zinc-500">Implied</div><div class="mono text-[15px] font-bold text-white mt-1">'+(s.implied*100).toFixed(3)+'%</div><div class="mono text-[11px] text-zinc-500">1/dec</div></div>'
-    +'<div class="border '+(isGood?'border-[#ff5a33]/20 bg-[#ff5a33]/[0.04]':'border-red-900 bg-red-950/20')+' p-3"><div class="mono text-[10px] font-semibold tracking-[0.12em] uppercase text-zinc-500">Kelly f*</div><div class="mono text-[15px] font-bold '+(isGood?'text-[#ff5a33]':'text-red-400')+' mt-1">'+(f*100).toFixed(2)+'%</div><div class="mono text-[11px] text-zinc-500">'+(isGood?'full':'don’t bet')+'</div></div>'
-    +'<div class="border border-zinc-800 p-3"><div class="mono text-[10px] font-semibold tracking-[0.12em] uppercase text-zinc-500">EV / $1</div><div class="mono text-[15px] font-bold '+(s.ev>0?'text-[#ff5a33]':'text-red-400')+' mt-1">'+(s.ev>0?'+':'')+s.ev.toFixed(4)+'</div></div>'
-    +'<div class="border border-zinc-800 p-3"><div class="mono text-[10px] font-semibold tracking-[0.12em] uppercase text-zinc-500">Edge</div><div class="mono text-[15px] font-bold '+(s.edge>0?'text-[#ff5a33]':'text-red-400')+' mt-1">'+(s.edge*100).toFixed(2)+'pp</div></div>';
-  var html='<thead><tr><th class="text-left px-3 py-2 mono text-[10px] font-semibold tracking-[0.06em] uppercase text-zinc-500 border-b border-zinc-800">#</th><th class="text-left px-3 py-2 mono text-[10px] font-semibold tracking-[0.06em] uppercase text-zinc-500 border-b border-zinc-800">Leg p</th><th class="text-left px-3 py-2 mono text-[10px] font-semibold tracking-[0.06em] uppercase text-zinc-500 border-b border-zinc-800">Odds</th><th class="text-left px-3 py-2 mono text-[10px] font-semibold tracking-[0.06em] uppercase text-zinc-500 border-b border-zinc-800">f* single</th><th class="text-left px-3 py-2 mono text-[10px] font-semibold tracking-[0.06em] uppercase text-zinc-500 border-b border-zinc-800">EV</th></tr></thead><tbody>';
-  var bestF=-Infinity;
-  for(var i=0;i<legs.length;i++){
-    var lg=legs[i], si=kellyStats(lg.p, lg.dec);
-    if(si.f>bestF) bestF=si.f;
-    html+='<tr class="border-b border-zinc-800 hover:bg-white/[0.02]"><td class="px-3 py-2.5 mono font-bold text-white">'+(i+1)+'</td><td class="px-3 py-2.5 mono text-white">'+(lg.p*100).toFixed(2)+'%</td><td class="px-3 py-2.5 mono text-white">'+lg.dec.toFixed(3)+'×</td><td class="px-3 py-2.5 mono font-bold '+(si.f>0?'text-[#ff5a33]':'text-red-400')+'">'+(si.f*100).toFixed(2)+'%</td><td class="px-3 py-2.5 mono '+(si.ev>0?'text-[#ff5a33]':'text-red-400')+'">'+(si.ev>0?'+':'')+si.ev.toFixed(4)+'</td></tr>';
-  }
-  html+='<tr class="bg-white text-black font-bold"><td class="px-3 py-2.5 mono">∑</td><td class="px-3 py-2.5 mono">'+(pc*100).toFixed(3)+'%</td><td class="px-3 py-2.5 mono">'+dc.toFixed(3)+'×</td><td class="px-3 py-2.5 mono">'+(f*100).toFixed(2)+'%</td><td class="px-3 py-2.5 mono '+(s.ev>0?'text-[#ff5a33]':'text-red-600')+'">'+(s.ev>0?'+':'')+s.ev.toFixed(4)+'</td></tr></tbody>';
-  document.getElementById("parlayTable").innerHTML=html;
-  var br; try{ br=parseBankroll(document.getElementById("parlay-br").value); setErr("parlay-br-err",""); }catch(e){ setErr("parlay-br-err", e.message); br=1000; }
-  var fcap=Math.min(Math.max(f,0),1), full=fcap*br, half=full*0.5, quart=full*0.25;
-  document.getElementById("parlayStakeKVs").innerHTML=''
-    +'<div class="border border-zinc-800 p-3"><div class="mono text-[10px] font-semibold tracking-[0.12em] uppercase text-zinc-500">Full Kelly</div><div class="mono text-[15px] font-bold text-white mt-1">'+fmtMoney(full)+'</div><div class="mono text-[11px] text-zinc-500">'+(fcap*100).toFixed(2)+'%</div></div>'
-    +'<div class="border border-[#ff5a33]/20 bg-[#ff5a33]/[0.04] p-3"><div class="mono text-[10px] font-semibold tracking-[0.12em] uppercase text-zinc-500">Half Kelly</div><div class="mono text-[15px] font-bold text-[#ff5a33] mt-1">'+fmtMoney(half)+'</div><div class="mono text-[11px] text-zinc-500">'+(fcap*50).toFixed(2)+'% — rec.</div></div>'
-    +'<div class="border border-zinc-800 p-3"><div class="mono text-[10px] font-semibold tracking-[0.12em] uppercase text-zinc-500">Quarter</div><div class="mono text-[15px] font-bold text-white mt-1">'+fmtMoney(quart)+'</div><div class="mono text-[11px] text-zinc-500">'+(fcap*25).toFixed(2)+'%</div></div>'
-    +'<div class="border border-zinc-800 p-3"><div class="mono text-[10px] font-semibold tracking-[0.12em] uppercase text-zinc-500">Best single f*</div><div class="mono text-[15px] font-bold text-white mt-1">'+(bestF*100).toFixed(2)+'%</div><div class="mono text-[11px] text-zinc-500">'+(f>bestF?'parlay > single (rare)':'singles safer')+'</div></div>';
-}
-function runParlayMonte(){
-  var legs=[], ok=true, firstErr="";
-  for(var i=0;i<parlayLegs.length;i++){ try{ var p=parseProb(parlayLegs[i].p), dec=oddsToDecimal(parlayLegs[i].dec); legs.push({p:p,dec:dec}); }catch(e){ ok=false; if(!firstErr) firstErr=e.message; } }
-  if(legs.length<2||!ok){ toast(firstErr||"Fix legs first (need 2+ valid)"); return; }
-  var comb=parlayCombined(legs), s=kellyStats(comb.p,comb.dec); if(s.f<=0){ toast("No edge — Kelly 0, simulation meaningless"); return; }
-  var br; try{ br=parseBankroll(document.getElementById("parlay-br").value); setErr("parlay-br-err",""); }catch(e){ setErr("parlay-br-err", e.message); toast(e.message); return; }
-  var f=Math.min(s.f,1)*0.5; var btn=document.getElementById("parlay-monte"), old=btn.innerHTML; btn.innerHTML='<span class="inline-block w-4 h-4 border-2 border-black/20 border-t-black mono animate-spin"></span> Running…'; btn.disabled=true;
-  setTimeout(function(){
-    var r=monteCarlo(br,comb.p,comb.dec,f,400,4000);
-    document.getElementById("parlayMonteSection").classList.remove("hidden");
-    document.getElementById("parlayEmpty").classList.add("hidden");
-    document.getElementById("parlayMonteKVs").innerHTML=''
-      +'<div class="border border-zinc-800 p-3"><div class="mono text-[10px] font-semibold tracking-[0.12em] uppercase text-zinc-500">Mean</div><div class="mono text-[15px] font-bold text-white mt-1">'+fmtMoney(r.mean)+'</div></div>'
-      +'<div class="border border-[#ff5a33]/20 bg-[#ff5a33]/[0.04] p-3"><div class="mono text-[10px] font-semibold tracking-[0.12em] uppercase text-zinc-500">Median</div><div class="mono text-[15px] font-bold text-[#ff5a33] mt-1">'+fmtMoney(r.median)+'</div></div>'
-      +'<div class="border border-zinc-800 p-3"><div class="mono text-[10px] font-semibold tracking-[0.12em] uppercase text-zinc-500">P5 — P95</div><div class="mono text-[13px] font-bold text-white mt-1">'+fmtMoney(r.p5)+' → '+fmtMoney(r.p95)+'</div></div>'
-      +'<div class="border '+(r.ruined>0.02?'border-red-900 bg-red-950/20':'border-zinc-800')+' p-3"><div class="mono text-[10px] font-semibold tracking-[0.12em] uppercase text-zinc-500">Ruin / bust</div><div class="mono text-[15px] font-bold '+(r.ruined>0.02?'text-red-400':'text-white')+' mt-1">'+(r.ruined*100).toFixed(1)+'% / '+(r.bust*100).toFixed(1)+'%</div></div>';
-    makeHistChart("parlayHist", r.finals, br);
-    makeEquityChart("parlayEquity", r.paths);
-    btn.innerHTML=old; btn.disabled=false; toast("Parlay sim done — median "+fmtMoney(r.median), true);
-  }, 40);
-}
-function bindParlay(){
-  renderParlayLegs();
-  document.getElementById("parlay-add").addEventListener("click", function(){ if(parlayLegs.length>=10){ toast("Max 10 legs"); return; } parlayLegs.push({p:"55%",dec:"1.91"}); saveParlay(); renderParlayLegs(); updateParlay(); });
-  document.getElementById("parlay-clear").addEventListener("click", function(){ parlayLegs=[{p:"55%",dec:"1.91"},{p:"55%",dec:"1.91"}]; saveParlay(); renderParlayLegs(); updateParlay(); toast("Cleared"); });
-  document.getElementById("parlay-br").addEventListener("input", updateParlay);
-  document.getElementById("parlay-br").addEventListener("keydown", function(e){ if(e.key==="-"||e.key==="e"||e.key==="E") e.preventDefault(); });
-  document.getElementById("parlay-monte").addEventListener("click", runParlayMonte);
-  document.querySelectorAll("[data-parlay]").forEach(function(b){ b.addEventListener("click", function(){ var v=b.getAttribute("data-parlay"); if(v==="preset2") parlayLegs=[{p:"60%",dec:"1.91"},{p:"55%",dec:"2.00"}]; if(v==="preset3") parlayLegs=[{p:"60%",dec:"1.91"},{p:"55%",dec:"2.10"},{p:"70%",dec:"1.50"}]; saveParlay(); renderParlayLegs(); updateParlay(); }); });
-}
-
-// ── Risk ──
-function updateRisk(){
-  var p; try{ p=parseProb(document.getElementById("r-p").value); setErr("r-p-err",""); }catch(e){ setErr("r-p-err", e.message); return; }
-  var q=1-p;
-  var s=document.getElementById("r-f").value.trim(), f;
-  if(s.charAt(s.length-1)==="%") f=parseFloat(s)/100; else { var v=parseFloat(s); f=v>1? v/100:v; }
-  if(!(f>0&&f<1)){ setErr("r-f-err","Use like 5% or 0.05 (0–100%)"); f=0.05; } else if(f<=0||f>=1){ setErr("r-f-err","Must be 0–100%"); } else setErr("r-f-err","");
-  if(f<0){ setErr("r-f-err","Cannot be negative"); return; }
-  var n50=f<1? Math.log(0.5)/Math.log(1-f):Infinity, n90=f<1? Math.log(0.1)/Math.log(1-f):Infinity;
-  var start, target, stake;
-  try{ start=parseBankroll(document.getElementById("r-start").value); }catch(e){ start=1000; }
-  try{ target=parseBankroll(document.getElementById("r-target").value); }catch(e){ target=2000; }
-  try{ stake=parseBankroll(document.getElementById("r-stake").value); if(stake<=0) throw new Error(); setErr("r-stake-err",""); }catch(e){ setErr("r-stake-err","Stake must be >0"); stake=10; }
-  if(target<=start){ /* allow but warn */ }
-  document.getElementById("riskKVs").innerHTML=''
-    +'<div class="border border-zinc-800 p-3"><div class="mono text-[10px] font-semibold tracking-[0.12em] uppercase text-zinc-500">Win / lose</div><div class="mono text-[15px] font-bold text-white mt-1">'+(p*100).toFixed(1)+'% / '+(q*100).toFixed(1)+'%</div><div class="mono text-[11px] text-zinc-500">per bet</div></div>'
-    +'<div class="border border-zinc-800 p-3"><div class="mono text-[10px] font-semibold tracking-[0.12em] uppercase text-zinc-500">−50% drawdown</div><div class="mono text-[15px] font-bold text-white mt-1">'+(isFinite(n50)?n50.toFixed(1):'—')+' losses</div><div class="mono text-[11px] text-zinc-500">at '+(f*100).toFixed(1)+'% / bet</div></div>'
-    +'<div class="border border-zinc-800 p-3"><div class="mono text-[10px] font-semibold tracking-[0.12em] uppercase text-zinc-500">−90% drawdown</div><div class="mono text-[15px] font-bold text-white mt-1">'+(isFinite(n90)?n90.toFixed(1):'—')+' losses</div><div class="mono text-[11px] text-zinc-500">consecutive</div></div>'
-    +'<div class="border border-zinc-800 p-3"><div class="mono text-[10px] font-semibold tracking-[0.12em] uppercase text-zinc-500">EV / bet</div><div class="mono text-[15px] font-bold text-white mt-1">'+(p*1-q*1).toFixed(3)+'</div><div class="mono text-[11px] text-zinc-500">even money ref</div></div>';
-  var table=document.getElementById("riskTable"), html='<thead><tr><th class="text-left px-3 py-2 mono text-[10px] font-semibold tracking-[0.06em] uppercase text-zinc-500 border-b border-zinc-800">Streak</th><th class="text-left px-3 py-2 mono text-[10px] font-semibold tracking-[0.06em] uppercase text-zinc-500 border-b border-zinc-800">Prob</th><th class="text-left px-3 py-2 mono text-[10px] font-semibold tracking-[0.06em] uppercase text-zinc-500 border-b border-zinc-800">1 in</th><th class="px-3 py-2 border-b border-zinc-800"></th></tr></thead><tbody>';
-  for(var n=5;n<=20;){ var pl=Math.pow(q,n), pw=Math.pow(p,n); html+='<tr class="border-b border-zinc-800 hover:bg-white/[0.02]"><td class="px-3 py-2 mono font-bold text-white">'+n+' L</td><td class="px-3 py-2 mono text-white">'+(pl*100).toFixed(3)+'%</td><td class="px-3 py-2 mono text-zinc-300">1 in '+(pl? (1/pl).toLocaleString(undefined,{maximumFractionDigits:0}):'—')+'</td><td class="px-3 py-2 mono text-zinc-500 text-xs">'+(pl*100>1?'common':'rare')+'</td></tr>'; html+='<tr class="border-b border-zinc-800 hover:bg-white/[0.02]"><td class="px-3 py-2 mono font-bold text-white">'+n+' W</td><td class="px-3 py-2 mono text-white">'+(pw*100).toFixed(3)+'%</td><td class="px-3 py-2 mono text-zinc-300">1 in '+(pw? (1/pw).toLocaleString(undefined,{maximumFractionDigits:0}):'—')+'</td><td class="px-3 py-2"></td></tr>'; if(n===5) n=8; else if(n===8) n=10; else if(n===10) n=12; else if(n===12) n=15; else if(n===15) n=20; else break; }
-  html+='</tbody>'; table.innerHTML=html;
-  makeRiskChart(q);
-  var canvas=document.getElementById("riskChart");
-  requestAnimationFrame(function(){ var ctx=canvas.getContext("2d"); });
-  var unitsStart=start/stake, unitsTarget=target/stake, probText="";
-  if(p!==0.5 && isFinite(unitsStart) && isFinite(unitsTarget) && unitsTarget>0){
-    var r=q/p, prob=(1-Math.pow(r,unitsStart))/(1-Math.pow(r,unitsTarget));
-    probText='P(hit '+fmtMoney(target)+' before $0) = '+(prob*100).toFixed(1)+'%';
-  } else if(p===0.5) probText='P(hit target) = '+(unitsStart/unitsTarget*100).toFixed(1)+'% (fair)';
-}
-function bindRisk(){
-  ["r-p","r-f","r-start","r-target","r-stake"].forEach(function(id){
-    var el=document.getElementById(id); if(!el) return;
-    el.addEventListener("input", updateRisk);
-  });
-  document.getElementById("r-p").addEventListener("keydown", blockLetters);
-  document.getElementById("r-f").addEventListener("keydown", blockLetters);
-  ["r-start","r-target","r-stake"].forEach(function(id){
-    var el=document.getElementById(id); if(el) el.addEventListener("keydown", function(e){ if(e.key==="-"||e.key==="e"||e.key==="E") e.preventDefault(); });
-  });
-}
-
-// ── Global ──
-function bindGlobal(){
-  document.getElementById("resetBtn").addEventListener("click", function(e){ e.preventDefault(); localStorage.clear(); location.reload(); });
-  window.addEventListener("resize", function(){
-    Object.keys(charts).forEach(function(k){ try{ charts[k].resize(); }catch(e){} });
-  });
-}
-bindKelly(); bindMonte(); bindLab(); bindParlay(); bindRisk(); bindGlobal();
-// restore
-try{
-  var saved=loadLS("gt.kelly", null); if(saved){ if(saved.p) document.getElementById("k-p").value=saved.p; if(saved.odds) document.getElementById("k-odds").value=saved.odds; if(saved.br) document.getElementById("k-br").value=saved.br; try{ document.getElementById("k-p2").value=Math.round(parseProb(saved.p)*100);}catch(e){} }
-  var act=loadLS("gt.active", "kelly"); if(act) showTab(act); else showTab("kelly");
-}catch(e){ showTab("kelly"); }
-updateKelly(); updateMonteHint(); updateRisk(); updateParlay();
-requestAnimationFrame(function(){ updateKelly(); });
-})();
-</script>
 </body>
 </html>
