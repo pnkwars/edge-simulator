@@ -2,5 +2,10 @@
   "framework": null,
   "outputDirectory": ".",
   "cleanUrls": true,
-  "rewrites": [{ "source": "/", "destination": "/home.html" }]
+  "rewrites": [
+    { "source": "/", "destination": "/home.html" },
+    { "source": "/home", "destination": "/home.html" },
+    { "source": "/app", "destination": "/index.html" },
+    { "source": "/retro", "destination": "/retro.html" }
+  ]
 }
