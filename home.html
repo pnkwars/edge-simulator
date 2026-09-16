@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="color-scheme" content="dark"/>
+<title>Monteq — Bet sizing you can trust</title>
+<link rel="icon" type="image/png" href="logo.png">
+<style>
+  @font-face{font-family:'NaN';src:url('/fonts/NaN-Regular.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+  @font-face{font-family:'NaN';src:url('/fonts/NaN-Medium.woff2') format('woff2');font-weight:500;font-style:normal;font-display:swap}
+  @font-face{font-family:'NaN';src:url('/fonts/NaN-Bold.woff2') format('woff2');font-weight:700;font-style:normal;font-display:swap}
+  @font-face{font-family:'NaN';src:url('/fonts/NaN-Black.woff2') format('woff2');font-weight:900;font-style:normal;font-display:swap}
+  @font-face{font-family:'NaN Mono';src:url('/fonts/NaN-Mono-Regular.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+  *{border-radius:0!important}
+</style>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-black text-zinc-100 antialiased" style="font-family:'NaN',system-ui,sans-serif">
+<header class="sticky top-0 z-40 bg-black border-b border-zinc-800">
+  <div class="max-w-[1440px] mx-auto px-5 md:px-6 h-[52px] flex items-center gap-6">
+    <a href="/home.html" class="flex items-center gap-3 shrink-0"><img src="logo.png" alt="Monteq" class="h-8 w-auto object-contain"></a>
+    <nav class="flex-1 flex justify-center gap-6 md:gap-8">
+      <a href="/home.html" class="text-[11px] font-semibold tracking-[0.18em] uppercase py-4 border-b-2 border-[#ff5a33] text-white">Home</a>
+      <a href="/index.html" class="text-[11px] font-semibold tracking-[0.18em] uppercase py-4 border-b-2 border-transparent text-zinc-400 hover:text-zinc-100">App</a>
+      <a href="/retro.html" class="hidden sm:inline text-[11px] font-semibold tracking-[0.18em] uppercase py-4 border-b-2 border-transparent text-zinc-400 hover:text-zinc-100">CRT</a>
+    </nav>
+    <a href="/index.html" class="hidden md:inline-flex items-center bg-white text-black text-[11px] font-bold tracking-[0.14em] uppercase px-4 py-2 hover:bg-zinc-200">Launch App →</a>
+  </div>
+</header>
+
+<section class="border-b border-zinc-800">
+  <div class="max-w-[1440px] mx-auto px-5 md:px-6 py-10 md:py-16 grid md:grid-cols-[1.15fr_0.85fr] gap-8 items-end">
+    <div class="relative">
+      <div class="absolute -top-6 -left-4 w-[120px] h-[80px] bg-[#1a2e1c] opacity-60 pointer-events-none hidden md:block"></div>
+      <div class="absolute -top-4 -left-2 w-[80px] h-[60px] bg-green-950 opacity-30 pointer-events-none hidden md:block"></div>
+      <p class="relative text-[10px] font-semibold tracking-[0.2em] uppercase text-zinc-500 mb-4">No accounts · No tracking · Runs in browser</p>
+      <h1 class="relative font-black tracking-[-0.04em] leading-[0.9] text-zinc-100 text-[40px] md:text-[56px]" style="font-family:'NaN',system-ui,sans-serif">Bet sizing<br/>you can trust.</h1>
+      <p class="text-[13px] leading-relaxed text-zinc-400 mt-4 max-w-[560px]">Kelly, Monte Carlo, parlays and ruin — one brutally honest dashboard. No accounts, no tracking. Accessible anywhere, and your numbers still never leave the browser.</p>
+      <div class="flex flex-wrap gap-3 mt-6">
+        <a href="/index.html" class="inline-flex items-center gap-2 bg-[#ff5a33] text-black font-bold tracking-[0.08em] uppercase text-[12px] px-6 py-3 hover:bg-[#ff6b4a]">Launch App →</a>
+        <a href="https://github.com/pnkwars/edge-simulator" class="inline-flex items-center gap-2 border border-zinc-800 text-zinc-300 font-semibold tracking-[0.08em] uppercase text-[12px] px-6 py-3 hover:border-zinc-600 hover:text-white">GitHub</a>
+      </div>
+      <p class="mono text-[11px] text-zinc-500 mt-3">Press <span class="text-zinc-300">1</span> Kelly · <span class="text-zinc-300">2</span> Monte Carlo · <span class="text-zinc-300">3</span> Lab · <span class="text-zinc-300">4</span> Parlay · <span class="text-zinc-300">5</span> Risk</p>
+    </div>
+    <div class="hidden md:block">
+      <div class="border border-zinc-800 p-4 bg-transparent">
+        <div class="text-[10px] font-semibold tracking-[0.14em] uppercase text-zinc-400 mb-3">At a glance</div>
+        <div class="grid grid-cols-2 gap-3 mono text-xs">
+          <div class="border border-zinc-800 p-3"><div class="text-zinc-500 uppercase tracking-[0.1em] text-[10px]">Kelly f*</div><div class="text-zinc-100 font-bold text-[13px] mt-1">4.2% → 2.1% half</div></div>
+          <div class="border border-zinc-800 p-3"><div class="text-zinc-500 uppercase tracking-[0.1em] text-[10px]">P5 · Median · P95</div><div class="text-zinc-100 font-bold text-[13px] mt-1">Spread, not average</div></div>
+          <div class="border border-zinc-800 p-3"><div class="text-zinc-500 uppercase tracking-[0.1em] text-[10px]">Parlay f*</div><div class="text-zinc-100 font-bold text-[13px] mt-1">Singles often safer</div></div>
+          <div class="border border-zinc-800 p-3 bg-[#1a2e1c]/40"><div class="text-zinc-500 uppercase tracking-[0.1em] text-[10px]">Ruin</div><div class="text-zinc-100 font-bold text-[13px] mt-1">Streaks kill edges</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="max-w-[1440px] mx-auto px-5 md:px-6 py-8 grid md:grid-cols-4 gap-4">
+  <a href="/index.html" class="group border border-zinc-800 p-5 hover:bg-white/[0.02]">
+    <div class="text-[10px] font-semibold tracking-[0.14em] uppercase text-zinc-500">01 — Kelly</div>
+    <div class="text-[15px] font-bold text-zinc-100 mt-2">Optimal size, sane size</div>
+    <p class="text-[12px] leading-relaxed text-zinc-400 mt-2">f* = (bp−q)/b. Half keeps ~75% growth with ~½ variance.</p>
+    <span class="inline-block mt-3 text-[11px] font-semibold tracking-[0.08em] uppercase text-zinc-100 group-hover:text-white">Open Kelly →</span>
+  </a>
+  <a href="/index.html" onclick="localStorage.setItem('gt.active', JSON.stringify('monte'))" class="group border border-zinc-800 p-5 hover:bg-white/[0.02]">
+    <div class="text-[10px] font-semibold tracking-[0.14em] uppercase text-zinc-500">02 — Monte Carlo</div>
+    <div class="text-[15px] font-bold text-zinc-100 mt-2">5,000 futures</div>
+    <p class="text-[12px] leading-relaxed text-zinc-400 mt-2">P5 / median / P95. If P5 nears zero, you bet too big.</p>
+    <span class="inline-block mt-3 text-[11px] font-semibold tracking-[0.08em] uppercase text-zinc-100 group-hover:text-white">Run simulation →</span>
+  </a>
+  <a href="/index.html" class="group border border-zinc-800 p-5 hover:bg-white/[0.02]">
+    <div class="text-[10px] font-semibold tracking-[0.14em] uppercase text-zinc-500">03 — Lab & Parlay</div>
+    <div class="text-[15px] font-bold text-zinc-100 mt-2">Fractions & accumulators</div>
+    <p class="text-[12px] leading-relaxed text-zinc-400 mt-2">0.25×→1.5× sweep. Parlays: product math, variance explodes.</p>
+    <span class="inline-block mt-3 text-[11px] font-semibold tracking-[0.08em] uppercase text-zinc-100 group-hover:text-white">Compare →</span>
+  </a>
+  <a href="/index.html" class="group border border-zinc-800 p-5 bg-[#1a2e1c]/20 hover:bg-[#1a2e1c]/30">
+    <div class="text-[10px] font-semibold tracking-[0.14em] uppercase text-zinc-500">04 — Risk</div>
+    <div class="text-[15px] font-bold text-zinc-100 mt-2">Streaks & ruin</div>
+    <p class="text-[12px] leading-relaxed text-zinc-400 mt-2">qⁿ, drawdown, gambler's ruin. Small edges drown in streaks.</p>
+    <span class="inline-block mt-3 text-[11px] font-semibold tracking-[0.08em] uppercase text-zinc-100 group-hover:text-white">Check risk →</span>
+  </a>
+</section>
+
+<section class="max-w-[1440px] mx-auto px-5 md:px-6 pb-8">
+  <div class="border border-zinc-800 p-5 flex flex-wrap gap-4 items-center justify-between">
+    <div class="mono text-[11px] text-zinc-400">Odds: <span class="text-zinc-100">2.50</span> or <span class="text-zinc-100">+150 / −110</span> or <span class="text-zinc-100">5/2</span> · Prob: <span class="text-zinc-100">55%</span> or <span class="text-zinc-100">0.55</span> · Shortcuts: <span class="text-zinc-100">1–5</span></div>
+    <a href="/index.html" class="bg-white text-black font-bold tracking-[0.08em] uppercase text-[11px] px-5 py-2.5">Enter App</a>
+  </div>
+</section>
+
+<footer class="max-w-[1440px] mx-auto px-5 md:px-6 pb-8 pt-4 border-t border-zinc-800 flex flex-wrap gap-3 items-center mono text-[11px] text-zinc-600">
+  <span class="font-semibold tracking-[0.06em] uppercase text-zinc-400">Monteq · No tracking</span>
+  <span class="hidden sm:inline">f*=(bp−q)/b · EV=p·b−q</span>
+  <span class="ml-auto">Local-first — numbers never leave browser</span>
+</footer>
+</body>
+</html>
