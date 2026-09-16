@@ -35,7 +35,7 @@
       <div class="absolute -top-4 -left-2 w-[80px] h-[60px] bg-green-950 opacity-30 pointer-events-none hidden md:block"></div>
       <p class="relative text-[10px] font-semibold tracking-[0.2em] uppercase text-zinc-500 mb-4">No accounts · No tracking · Runs in browser</p>
       <h1 class="relative font-black tracking-[-0.04em] leading-[0.9] text-black text-[40px] md:text-[56px] bg-white inline-block px-3 py-1 rounded-none font-bold" style="font-family:'NaN',system-ui,sans-serif">Bet sizing<br/>you can trust.</h1>
-      <p class="text-[13px] leading-relaxed text-zinc-400 mt-4 max-w-[560px]">Kelly, Monte Carlo, parlays and ruin — one brutally honest dashboard. No accounts, no tracking. Accessible anywhere, and your numbers still never leave the browser.</p>
+      <p id="hero-description" class="text-[13px] leading-relaxed text-zinc-400 mt-4 max-w-[560px]">Kelly, Monte Carlo, parlays and ruin — one brutally honest dashboard. No accounts, no tracking. Accessible anywhere, and your numbers still never leave the browser.</p>
       <div class="flex flex-wrap gap-3 mt-6">
         <a href="/app" class="inline-flex items-center gap-2 bg-[#22c55e] text-black font-bold tracking-[0.08em] uppercase text-[12px] px-6 py-3 hover:bg-green-600">Launch App →</a>
         <a href="https://github.com/pnkwars/edge-simulator" class="inline-flex items-center gap-2 border border-zinc-800 text-zinc-300 font-semibold tracking-[0.08em] uppercase text-[12px] px-6 py-3 hover:border-zinc-600 hover:text-white">GitHub</a>
@@ -95,5 +95,14 @@
   <span class="hidden sm:inline">f*=(bp−q)/b · EV=p·b−q</span>
   <span class="ml-auto">Local-first — numbers never leave browser</span>
 </footer>
+<script>
+var HERO_COPY={
+  kelly:"Calculates optimal bankroll sizing to maximize log-growth. Example: 55% win rate at 2.0 odds. Output: Focus on the fractional Kelly (e.g., Half Kelly) to secure ~75% of the growth with only half the brutal volatility.",
+  monte:"Runs 5,000+ simulated bankrolls to visualize your Expected Value without curve fitting. Example: Replaying your edge across 1,000 parallel worlds. Output: Averages lie. Check the P5 (bottom 5th percentile) to see your realistic worst-case drawdown.",
+  lab:"Tests 5 different Kelly fractions (0.25x to 1.5x) head-to-head in a simulated environment. Example: Comparing Half Kelly vs Full Kelly variance. Output: Watch how ruin spikes past 1.0x; it proves the highest median profit rarely equals the best risk profile.",
+  parlay:"A strict risk engine for combined independent bets. Example: Combining three 60% probability legs. Output: Truthfully compares the parlay's Kelly sizing against your best single leg to prove how violently variance multiplies.",
+  risk:"Calculates exact streak probabilities and gambler's ruin. Example: The mathematical odds of losing 6 bets in a row. Output: Keeps you grounded by showing how quickly small edges drown in inevitable losing streaks."
+};
+</script>
 </body>
 </html>

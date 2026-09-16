@@ -55,7 +55,7 @@
   <div class="max-w-[1440px] mx-auto px-5 md:px-6 py-8 md:py-10 grid md:grid-cols-[1.15fr_0.85fr] gap-8 items-end">
     <div>
       <h1 class="font-display font-black tracking-[-0.04em] leading-[0.9] text-black text-[36px] md:text-[48px] bg-white inline-block px-3 py-1 rounded-none font-bold">Bet sizing<br/>you can trust.</h1>
-      <p class="font-ui text-[13px] leading-relaxed text-zinc-400 mt-3 max-w-[560px]">Kelly, Monte Carlo, parlays and ruin — one brutally honest dashboard. No accounts, no tracking. Accessible anywhere, and your numbers still never leave the browser.</p>
+      <p id="hero-description" class="font-ui text-[13px] leading-relaxed text-zinc-400 mt-3 max-w-[560px]">Kelly, Monte Carlo, parlays and ruin — one brutally honest dashboard. No accounts, no tracking. Accessible anywhere, and your numbers still never leave the browser.</p>
     </div>
     <div class="hidden md:block"></div>
   </div>
@@ -472,6 +472,13 @@ function makeRiskChart(q){
 }
 
 // ── Tabs — underline brutalist ──
+var HERO_COPY={
+  kelly:"Calculates optimal bankroll sizing to maximize log-growth. Example: 55% win rate at 2.0 odds. Output: Focus on the fractional Kelly (e.g., Half Kelly) to secure ~75% of the growth with only half the brutal volatility.",
+  monte:"Runs 5,000+ simulated bankrolls to visualize your Expected Value without curve fitting. Example: Replaying your edge across 1,000 parallel worlds. Output: Averages lie. Check the P5 (bottom 5th percentile) to see your realistic worst-case drawdown.",
+  lab:"Tests 5 different Kelly fractions (0.25x to 1.5x) head-to-head in a simulated environment. Example: Comparing Half Kelly vs Full Kelly variance. Output: Watch how ruin spikes past 1.0x; it proves the highest median profit rarely equals the best risk profile.",
+  parlay:"A strict risk engine for combined independent bets. Example: Combining three 60% probability legs. Output: Truthfully compares the parlay's Kelly sizing against your best single leg to prove how violently variance multiplies.",
+  risk:"Calculates exact streak probabilities and gambler's ruin. Example: The mathematical odds of losing 6 bets in a row. Output: Keeps you grounded by showing how quickly small edges drown in inevitable losing streaks."
+};
 var active="kelly";
 var TAB_LABELS={kelly:'Kelly',monte:'Monte Carlo',lab:'Lab',parlay:'Parlay',risk:'Risk'};
 function showTab(tab){
@@ -487,6 +494,7 @@ function showTab(tab){
   document.querySelectorAll(".view").forEach(function(v){ v.classList.toggle("hidden", v.id!=="view-"+tab); v.classList.toggle("active", v.id==="view-"+tab); });
   document.querySelectorAll(".left-panels>div").forEach(function(p){ p.classList.toggle("hidden", p.getAttribute("data-panel")!==tab); p.classList.toggle("active", p.getAttribute("data-panel")===tab); });
   document.getElementById("leftTitle").textContent=TAB_LABELS[tab];
+  var hd=document.getElementById("hero-description"); if(hd && HERO_COPY[tab]) hd.textContent=HERO_COPY[tab];
   if(tab==="kelly") updateKelly();
   if(tab==="risk") updateRisk();
   if(tab==="monte") updateMonteHint();
