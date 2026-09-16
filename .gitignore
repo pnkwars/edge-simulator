@@ -4,3 +4,6 @@ __pycache__/
 node_modules/
 .env
 .vercel
+.dart_tool/
+build/
+.flutter-plugins
