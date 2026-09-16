@@ -10,7 +10,7 @@ We aim to acknowledge within 48 hours and to provide a fix or mitigation plan wi
 
 ## Scope
 
-- `app.py` local server, `gamble.py` CLI, and static web UI (`index.html`, `retro.html`).
+- `app.py` local server, `gamble.py` CLI, and static web UI (`index.html`, `home.html`, `app.html`).
 - This project has no backend, auth, or external API at runtime beyond Tailwind/Chart.js CDNs.
 
 Thanks for helping keep Edge Simulator safe.

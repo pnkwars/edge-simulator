@@ -18,7 +18,6 @@
 ---
 
 <p align="center">
-  <br><sub><i>Modern dashboard (Tailwind + Chart.js) — also available as a green-on-black CRT mode.</i></sub>
 </p>
 
 ### Why this exists
@@ -50,7 +49,6 @@ cd edge-simulator
 # Web UI — opens http://localhost:8765
 python3 app.py
 # → modern dashboard at /
-# → CRT theme at /retro.html
 
 # Or skip the browser entirely
 python3 gamble.py                  # interactive terminal
@@ -85,7 +83,6 @@ None of this is financial advice. It's a way to make your assumptions visible be
 app.py              tiny static server on :8765 (no framework, no-store cache)
 gamble.py           same math in a terminal UI — ANSI colors, sparklines, no deps
 index.html          modern dashboard — Tailwind + Chart.js, fully responsive
-retro.html          same app, green phosphor CRT skin
 requirements.txt    only gunicorn (for hosting); the app itself needs nothing
 ```
 

@@ -10,10 +10,6 @@
     {
       "source": "/app",
       "destination": "/app.html"
-    },
-    {
-      "source": "/retro",
-      "destination": "/retro.html"
     }
   ]
 }
