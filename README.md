@@ -12,7 +12,7 @@
 
 <p align="center">
   <b>Kelly Criterion</b> · <b>Monte Carlo</b> · <b>Parlay Builder</b> · <b>Risk &amp; Ruin</b><br>
-  <sub>All in one page. No signup. No backend. Your numbers never leave the browser.</sub>
+  <sub>Kelly, Monte Carlo, parlays and ruin — one brutally honest dashboard. No accounts, no tracking. Accessible anywhere, and your numbers still never leave the browser.</sub>
 </p>
 
 ---

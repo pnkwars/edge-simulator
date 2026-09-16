@@ -7,15 +7,18 @@
 <title>Monteq — Edge Simulator</title>
 <link rel="icon" type="image/png" href="logo.png">
 <link rel="apple-touch-icon" href="logo.png">
-<!-- a16z editorial typography: Playfair (serif) + Space Grotesk (sans) + Space Mono / JetBrains Mono (data) -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 <style>
-  .font-display{font-family:'Playfair Display',serif}
-  .font-ui{font-family:'Space Grotesk',Inter,ui-sans-system,sans-serif}
-  .mono{font-family:'Space Mono','JetBrains Mono',ui-monospace,monospace}
+  /* NaN.xyz — Studio NaN typography (files expected in /fonts) */
+  @font-face{font-family:'NaN';src:url('/fonts/NaN-Regular.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+  @font-face{font-family:'NaN';src:url('/fonts/NaN-Medium.woff2') format('woff2');font-weight:500;font-style:normal;font-display:swap}
+  @font-face{font-family:'NaN';src:url('/fonts/NaN-Bold.woff2') format('woff2');font-weight:700;font-style:normal;font-display:swap}
+  @font-face{font-family:'NaN';src:url('/fonts/NaN-Black.woff2') format('woff2');font-weight:900;font-style:normal;font-display:swap}
+  @font-face{font-family:'NaN Mono';src:url('/fonts/NaN-Mono-Regular.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+  .font-display{font-family:'NaN',system-ui,sans-serif}
+  .font-ui{font-family:'NaN',system-ui,sans-serif}
+  .mono{font-family:'NaN Mono','NaN',ui-monospace,monospace}
   *{scrollbar-width:thin;scrollbar-color:#27272a transparent}
   ::-webkit-scrollbar{width:6px;height:6px} ::-webkit-scrollbar-thumb{background:#27272a}
   ::selection{background:#ff5a33;color:#000}
@@ -23,7 +26,7 @@
   .chart-wrap canvas{width:100%!important}
 </style>
 </head>
-<body class="bg-black text-zinc-100 antialiased" style="font-family:'Space Grotesk',Inter,ui-sans-system,sans-serif">
+<body class="bg-black text-zinc-100 antialiased font-['NaN']" style="font-family:'NaN',system-ui,sans-serif">
 <!-- Editorial top bar — brutalist, uppercase, underline active -->
 <header class="sticky top-0 z-40 bg-black border-b border-zinc-800">
   <div class="max-w-[1440px] mx-auto px-5 md:px-6 h-[52px] flex items-center gap-6">
@@ -51,7 +54,7 @@
   <div class="max-w-[1440px] mx-auto px-5 md:px-6 py-8 md:py-10 grid md:grid-cols-[1.15fr_0.85fr] gap-8 items-end">
     <div>
       <h1 class="font-display font-black tracking-[-0.04em] leading-[0.9] text-white text-[36px] md:text-[48px]">Bet sizing<br/>you can trust.</h1>
-      <p class="font-ui text-[13px] leading-relaxed text-zinc-400 mt-3 max-w-[560px]">Kelly, Monte Carlo, parlays and ruin — one brutally honest page that runs offline. No accounts, no tracking, no backend. Your numbers never leave the browser.</p>
+      <p class="font-ui text-[13px] leading-relaxed text-zinc-400 mt-3 max-w-[560px]">Kelly, Monte Carlo, parlays and ruin — one brutally honest dashboard. No accounts, no tracking. Accessible anywhere, and your numbers still never leave the browser.</p>
     </div>
     <div class="hidden md:block"></div>
   </div>
@@ -307,7 +310,7 @@ function blockLetters(e){
 }
 
 // ── Chart.js — brutalist: stark grid, coral/white accents ──
-Chart.defaults.color="#52525b"; Chart.defaults.borderColor="rgba(39,39,42,.8)"; Chart.defaults.font.family="Space Mono";
+Chart.defaults.color="#52525b"; Chart.defaults.borderColor="rgba(39,39,42,.8)"; Chart.defaults.font.family="'NaN Mono'";
 var charts={};
 function destroyChart(id){ if(charts[id]){ try{ charts[id].destroy(); }catch(e){} delete charts[id]; } }
 function makeKellyChart(p,dec,fStar){
@@ -431,7 +434,7 @@ function makeLabChart(rows){
     options:{
       responsive:true, maintainAspectRatio:false,
       plugins:{
-        legend:{display:true, labels:{color:"#71717a", boxWidth:10, font:{size:11, family:"Space Mono"}}},
+        legend:{display:true, labels:{color:"#71717a", boxWidth:10, font:{size:11, family:"'NaN Mono'"}}},
         tooltip:{
           backgroundColor:"rgba(0,0,0,.95)", titleColor:"#fafafa", bodyColor:"#a1a1aa", borderColor:"#27272a", borderWidth:1,
           callbacks:{ label:function(c){ return c.dataset.label+": "+fmtMoney(c.parsed.y); } }
